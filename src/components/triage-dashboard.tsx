@@ -122,7 +122,7 @@ function RatingStars({ rating, size = 13 }: { rating: number; size?: number }) {
   );
 }
 
-function ReviewCard({
+function ReviewRow({
   review,
   selected,
   onSelect,
@@ -140,10 +140,10 @@ function ReviewCard({
       onClick={onSelect}
       aria-pressed={selected}
       className={cn(
-        "w-full rounded-xl border bg-card px-4 py-3.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "w-full border-b border-l-2 border-b-border px-4 py-3.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
         selected
-          ? "border-primary bg-primary/5"
-          : "border-border hover:border-primary/50 hover:bg-accent/50",
+          ? "border-l-sidebar-primary bg-sidebar-accent/50"
+          : "border-l-transparent hover:bg-accent/50",
       )}
     >
       <span className="flex items-start justify-between gap-3">
@@ -685,10 +685,10 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                 {filteredReviews.length}
               </span>
             </div>
-            <div className="space-y-2">
+            <div className="border-t border-border">
               <AnimatePresence initial={false}>
                 {filteredReviews.map((review) => (
-                  <ReviewCard
+                  <ReviewRow
                     key={review.id}
                     review={review}
                     selected={selectedReview?.id === review.id}
