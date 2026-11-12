@@ -133,7 +133,9 @@ function ReviewCard({
 }) {
   return (
     <motion.button
-      layout
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.16, ease: "easeOut" }}
       type="button"
       onClick={onSelect}
       aria-pressed={selected}
@@ -228,9 +230,9 @@ function DraftTurn({
 }) {
   return (
     <motion.article
-      layout
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.16, ease: "easeOut" }}
       className="flex gap-3"
     >
       <span className="grid size-8 shrink-0 place-items-center rounded-xl border border-violet-300/15 bg-violet-300/[0.09] text-violet-100">
@@ -796,8 +798,9 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                 <div className="mx-auto max-w-[760px]">
                   {notice ? (
                     <motion.div
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.16, ease: "easeOut" }}
                       role={notice.tone === "error" ? "alert" : "status"}
                       className={cn(
                         "mb-5 flex items-start justify-between gap-3 rounded-xl border px-3.5 py-3 text-xs",
@@ -907,9 +910,9 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                         ) : (
                           <motion.div
                             key={`${selectedReview.id}-user-${index}`}
-                            layout
-                            initial={{ opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.16, ease: "easeOut" }}
                             className="ml-8 flex justify-end"
                           >
                             <div className="max-w-[85%] rounded-2xl rounded-tr-md border border-emerald-200/10 bg-emerald-200/[0.055] px-4 py-3 text-[12px] leading-[1.75] text-emerald-50/85">
