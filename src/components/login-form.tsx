@@ -54,17 +54,17 @@ export function LoginForm({ hasCallbackError }: { hasCallbackError: boolean }) {
         <span className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground">
           <MessageSquareText size={17} />
         </span>
-        <span className="text-sm font-semibold tracking-[-0.03em] text-white">
-          review<span className="text-primary">pulse</span>
+        <span className="text-sm font-semibold tracking-[-0.03em] text-foreground">
+          review<span className="text-accent-foreground">pulse</span>
         </span>
       </Link>
 
       {sent ? (
         <div className="py-2">
-          <span className="grid size-11 place-items-center rounded-2xl border border-primary/15 bg-primary/10 text-primary">
+          <span className="grid size-11 place-items-center rounded-2xl border border-primary/15 bg-primary/10 text-accent-foreground">
             <CheckCircle2 size={21} />
           </span>
-          <h1 className="mt-6 text-2xl font-semibold tracking-[-0.04em] text-white">
+          <h1 className="mt-6 text-2xl font-semibold tracking-[-0.04em] text-foreground">
             Check your inbox
           </h1>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">
@@ -75,11 +75,11 @@ export function LoginForm({ hasCallbackError }: { hasCallbackError: boolean }) {
         </div>
       ) : (
         <>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/10 bg-primary/5 px-2.5 py-1 text-[10px] font-medium text-primary">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/10 bg-primary/5 px-2.5 py-1 text-[10px] font-medium text-accent-foreground">
             <Mail size={11} />
             Private workspace
           </span>
-          <h1 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-white">
+          <h1 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-foreground">
             Welcome back
           </h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -101,7 +101,7 @@ export function LoginForm({ hasCallbackError }: { hasCallbackError: boolean }) {
               className="h-11"
             />
             {error ? (
-              <p role="alert" className="text-xs leading-5 text-rose-300">
+              <p role="alert" className="text-xs leading-5 text-destructive">
                 {error}
               </p>
             ) : null}

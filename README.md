@@ -2,7 +2,7 @@
 
 Review Pulse helps a business owner triage customer reviews and prepare brand-aligned replies. The app uses Next.js 16 App Router, React 19, Tailwind CSS v4, shadcn/ui, Framer Motion, Supabase, and LangGraph with Gemini.
 
-The dark theme is based on TweakCN's [openprofile theme](https://tweakcn.com/r/themes/cmi0kusqy000004jlhzfjfpim).
+The light theme is based on TweakCN's [openprofile theme](https://tweakcn.com/r/themes/cmi0kusqy000004jlhzfjfpim).
 
 ## Run locally
 

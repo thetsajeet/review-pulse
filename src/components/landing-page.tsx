@@ -23,7 +23,7 @@ const reviewPreview = [
     name: "Olivia Chen",
     note: "The team made our anniversary dinner feel special...",
     sentiment: "Positive",
-    color: "text-emerald-200",
+    color: "text-emerald-700",
     stars: 5,
   },
   {
@@ -31,7 +31,7 @@ const reviewPreview = [
     name: "Marcus Williams",
     note: "We waited nearly 40 minutes after ordering...",
     sentiment: "Needs care",
-    color: "text-rose-200",
+    color: "text-rose-700",
     stars: 2,
   },
   {
@@ -39,7 +39,7 @@ const reviewPreview = [
     name: "Priya Patel",
     note: "Lovely atmosphere and a great brunch menu...",
     sentiment: "Positive",
-    color: "text-emerald-200",
+    color: "text-emerald-700",
     stars: 4,
   },
 ];
@@ -57,15 +57,15 @@ export function LandingPage() {
             <MessageSquareText size={18} strokeWidth={2.2} />
           </span>
           <span className="text-[15px] font-semibold tracking-[-0.03em] text-foreground">
-            review<span className="text-primary">pulse</span>
+            review<span className="text-accent-foreground">pulse</span>
           </span>
         </Link>
 
         <nav className="hidden items-center gap-8 text-[13px] text-muted-foreground sm:flex">
-          <a className="transition hover:text-white" href="#how-it-works">
+          <a className="transition hover:text-foreground" href="#how-it-works">
             How it works
           </a>
-          <a className="transition hover:text-white" href="#built-for-trust">
+          <a className="transition hover:text-foreground" href="#built-for-trust">
             Built for trust
           </a>
         </nav>
@@ -85,7 +85,7 @@ export function LandingPage() {
           transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
           className="max-w-[620px]"
         >
-          <Badge variant="outline" className="mb-7 h-auto gap-2 border-primary/20 bg-primary/5 px-3 py-1.5 text-[11px] font-medium tracking-wide text-primary">
+          <Badge variant="outline" className="mb-7 h-auto gap-2 border-primary/20 bg-primary/5 px-3 py-1.5 text-[11px] font-medium tracking-wide text-accent-foreground">
             <span className="relative flex size-1.5">
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
               <span className="relative inline-flex size-1.5 rounded-full bg-primary" />
@@ -93,9 +93,9 @@ export function LandingPage() {
             YOUR REVIEWS, WITH A HUMAN TOUCH
           </Badge>
 
-          <h1 className="max-w-[650px] text-[clamp(2.8rem,6.2vw,5.25rem)] font-semibold leading-[0.99] tracking-[-0.075em] text-white">
+          <h1 className="max-w-[650px] text-[clamp(2.8rem,6.2vw,5.25rem)] font-semibold leading-[0.99] tracking-[-0.075em] text-foreground">
             Every review deserves a{" "}
-            <span className="bg-gradient-to-r from-primary via-primary/80 to-foreground bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-accent-foreground to-foreground bg-clip-text text-transparent">
               thoughtful reply.
             </span>
           </h1>
@@ -120,7 +120,7 @@ export function LandingPage() {
             </span>
           </div>
 
-          <div className="mt-11 flex items-center gap-4 border-t border-white/[0.07] pt-6">
+          <div className="mt-11 flex items-center gap-4 border-t border-border pt-6">
             <div className="flex -space-x-2">
               {["bg-violet-300", "bg-sky-300", "bg-amber-200", "bg-rose-300"].map(
                 (color, index) => (
@@ -149,9 +149,9 @@ export function LandingPage() {
           aria-label="Preview of the Review Pulse review inbox"
         >
           <Card className="relative overflow-hidden rounded-[22px] border-border bg-card p-0 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/[0.07] px-5 py-4">
+            <div className="flex items-center justify-between border-b border-border px-5 py-4">
               <div className="flex items-center gap-3">
-                <span className="grid size-8 place-items-center rounded-lg border border-border bg-muted text-primary">
+                <span className="grid size-8 place-items-center rounded-lg border border-border bg-muted text-accent-foreground">
                   <MessageSquareText size={15} />
                 </span>
                 <div>
@@ -159,13 +159,13 @@ export function LandingPage() {
                   <p className="mt-0.5 text-[10px] text-muted-foreground">The Juniper Table</p>
                 </div>
               </div>
-              <Badge variant="outline" className="h-auto border-primary/20 bg-primary/5 px-2.5 py-1 text-[9px] font-medium text-primary">
+              <Badge variant="outline" className="h-auto border-primary/20 bg-primary/5 px-2.5 py-1 text-[9px] font-medium text-accent-foreground">
                 12 to review
               </Badge>
             </div>
 
             <div className="grid min-h-[348px] grid-cols-[0.92fr_1.08fr] gap-0">
-              <div className="border-r border-white/[0.07] p-3">
+              <div className="border-r border-border p-3">
                 <div className="mb-2 flex items-center justify-between px-1.5">
                   <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                     Recent
@@ -185,7 +185,7 @@ export function LandingPage() {
                         <span className="truncate text-[10px] font-medium text-foreground">
                           {review.name}
                         </span>
-                        <span className="flex shrink-0 gap-0.5 text-amber-200">
+                        <span className="flex shrink-0 gap-0.5 text-amber-800">
                           {Array.from({ length: 5 }).map((_, star) => (
                             <Star
                               key={star}
@@ -214,7 +214,7 @@ export function LandingPage() {
                   </span>
                   <div>
                     <p className="text-[10px] font-medium text-foreground">Olivia Chen</p>
-                    <div className="mt-0.5 flex gap-0.5 text-amber-200">
+                    <div className="mt-0.5 flex gap-0.5 text-amber-800">
                       {Array.from({ length: 5 }).map((_, index) => (
                         <Star key={index} size={8} fill="currentColor" />
                       ))}
@@ -234,10 +234,10 @@ export function LandingPage() {
                 >
                   <div className="mb-2 flex items-center justify-between">
                     <span className="flex items-center gap-1.5 text-[9px] font-semibold text-foreground">
-                      <WandSparkles size={11} className="text-primary" />
+                      <WandSparkles size={11} className="text-accent-foreground" />
                       ReviewAgent draft
                     </span>
-                    <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[8px] text-primary">
+                    <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[8px] text-accent-foreground">
                       On brand
                     </span>
                   </div>
@@ -246,7 +246,7 @@ export function LandingPage() {
                     you enjoyed your evening, and we look forward to welcoming
                     you back.
                   </p>
-                  <div className="mt-3 flex items-center gap-1.5 border-t border-white/[0.07] pt-2.5">
+                  <div className="mt-3 flex items-center gap-1.5 border-t border-border pt-2.5">
                     <span className="grid size-4 place-items-center rounded-full bg-primary text-primary-foreground">
                       <Check size={9} strokeWidth={3} />
                     </span>
@@ -259,8 +259,8 @@ export function LandingPage() {
               </div>
               </div>
 
-            <div className="flex items-center gap-2 border-t border-white/[0.07] bg-black/10 px-4 py-3">
-              <Sparkles size={12} className="text-primary" />
+            <div className="flex items-center gap-2 border-t border-border bg-muted/50 px-4 py-3">
+              <Sparkles size={12} className="text-accent-foreground" />
               <span className="text-[9px] text-muted-foreground">
                 Thoughtful replies, ready when you are.
               </span>
@@ -277,7 +277,7 @@ export function LandingPage() {
             transition={{ delay: 1, duration: 0.35 }}
             className="absolute -bottom-5 -left-6 hidden items-center gap-2.5 rounded-xl border border-border bg-card px-3.5 py-3 shadow-xl sm:flex"
           >
-            <span className="grid size-8 place-items-center rounded-lg bg-primary/10 text-primary">
+            <span className="grid size-8 place-items-center rounded-lg bg-primary/10 text-accent-foreground">
               <ShieldCheck size={16} />
             </span>
             <span>
@@ -298,10 +298,10 @@ export function LandingPage() {
       >
         <div className="mx-auto max-w-7xl px-6 py-20 sm:px-10 lg:py-24">
           <div className="mx-auto max-w-xl text-center">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-accent-foreground">
               A better way to respond
             </span>
-            <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-white sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-foreground sm:text-4xl">
               From review to reply,
               <br className="hidden sm:block" /> without the busywork.
             </h2>
@@ -335,7 +335,7 @@ export function LandingPage() {
               >
                 <Card className="h-full border-border bg-card">
                   <CardContent className="p-6">
-                    <span className="grid size-10 place-items-center rounded-xl border border-primary/10 bg-primary/5 text-primary">
+                    <span className="grid size-10 place-items-center rounded-xl border border-primary/10 bg-primary/5 text-accent-foreground">
                       <Icon size={18} />
                     </span>
                     <h3 className="mt-5 text-sm font-semibold text-card-foreground">{title}</h3>
@@ -351,11 +351,11 @@ export function LandingPage() {
             className="mt-14 flex flex-col items-center justify-between gap-5 rounded-2xl border border-border bg-gradient-to-r from-primary/5 via-card to-primary/5 p-6 sm:flex-row sm:px-8"
           >
             <div className="flex items-center gap-4">
-              <span className="grid size-11 place-items-center rounded-full border border-primary/10 bg-primary/5 text-primary">
+              <span className="grid size-11 place-items-center rounded-full border border-primary/10 bg-primary/5 text-accent-foreground">
                 <ShieldCheck size={19} />
               </span>
               <div>
-                <p className="text-sm font-semibold text-white">
+                <p className="text-sm font-semibold text-foreground">
                   Designed for trust, not autopilot
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
@@ -363,7 +363,7 @@ export function LandingPage() {
                 </p>
               </div>
             </div>
-            <Button variant="link" asChild className="group h-auto p-0 text-xs font-semibold text-primary">
+            <Button variant="link" asChild className="group h-auto p-0 text-xs font-semibold text-accent-foreground">
               <Link href="/triage">
                 Explore the workspace
                 <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
@@ -373,11 +373,11 @@ export function LandingPage() {
         </div>
       </section>
 
-      <footer className="relative z-10 border-t border-white/[0.06]">
+      <footer className="relative z-10 border-t border-border">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-6 text-[10px] text-muted-foreground sm:flex-row sm:px-10">
           <span>© Review Pulse</span>
           <span className="flex items-center gap-1.5">
-            <Star size={10} className="text-primary" />
+            <Star size={10} className="text-accent-foreground" />
             Thoughtful replies. Stronger relationships.
           </span>
           <Link className="inline-flex items-center gap-1 hover:text-muted-foreground" href="/triage">

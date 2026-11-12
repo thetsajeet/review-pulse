@@ -94,9 +94,9 @@ function SentimentBadge({ sentiment }: { sentiment: Sentiment }) {
       variant="outline"
       className={cn(
         sentiment === "Positive" &&
-          "border-emerald-300/20 bg-emerald-300/10 text-emerald-300",
+          "border-emerald-300/20 bg-emerald-300/10 text-emerald-700",
         sentiment === "Neutral" &&
-          "border-amber-300/20 bg-amber-300/10 text-amber-200",
+          "border-amber-300/20 bg-amber-300/10 text-amber-800",
         sentiment === "Negative" &&
           "border-destructive/20 bg-destructive/10 text-destructive",
       )}
@@ -115,7 +115,7 @@ function RatingStars({ rating, size = 13 }: { rating: number; size?: number }) {
           key={index}
           size={size}
           strokeWidth={1.7}
-          className={index < rating ? "fill-amber-300 text-amber-300" : "text-muted-foreground/40"}
+          className={index < rating ? "fill-amber-600 text-amber-600" : "text-muted-foreground/40"}
         />
       ))}
     </span>
@@ -178,7 +178,7 @@ function ReviewCard({
                 review.status === "REJECTED"
                   ? "text-destructive"
                   : review.status === "APPROVED"
-                    ? "text-primary"
+                    ? "text-accent-foreground"
                     : "text-muted-foreground",
               )}
             >
@@ -235,7 +235,7 @@ function DraftTurn({
       transition={{ duration: 0.16, ease: "easeOut" }}
       className="flex gap-3"
     >
-      <span className="grid size-8 shrink-0 place-items-center rounded-xl border border-primary/15 bg-primary/10 text-primary">
+      <span className="grid size-8 shrink-0 place-items-center rounded-xl border border-primary/15 bg-primary/10 text-accent-foreground">
         <WandSparkles size={15} />
       </span>
       <div className="min-w-0 flex-1">
@@ -262,10 +262,10 @@ function DraftTurn({
               <Check size={12} strokeWidth={3} />
             </span>
             <span>
-              <span className="block text-xs font-semibold text-emerald-100">
+              <span className="block text-xs font-semibold text-emerald-700">
                 Sent to Google Business Profile
               </span>
-              <span className="mt-1 block text-[10px] leading-4 text-emerald-100/55">
+              <span className="mt-1 block text-[10px] leading-4 text-emerald-700">
                 MVP delivery is simulated. Connect Google Business Profile to publish live.
               </span>
             </span>
@@ -298,12 +298,12 @@ function DraftTurn({
                 className="h-8 rounded-lg px-3 text-[11px]"
               >
                 {working === "reject" ? (
-                  <span className="size-3 animate-spin rounded-full border border-rose-200/30 border-t-rose-200" />
+                  <span className="size-3 animate-spin rounded-full border border-secondary-foreground/30 border-t-secondary-foreground" />
                 ) : (
                   <ThumbsDown size={12} />
                 )}
                 Reject
-                <kbd className="ml-1 rounded border border-white/10 px-1 py-0.5 text-[9px] text-muted-foreground">
+                <kbd className="ml-1 rounded border border-border px-1 py-0.5 text-[9px] text-muted-foreground">
                   R
                 </kbd>
               </Button>
@@ -317,7 +317,7 @@ function DraftTurn({
               >
                 <WandSparkles size={12} />
                 Refactor
-                <kbd className="ml-1 rounded border border-white/10 px-1 py-0.5 text-[9px] text-muted-foreground">
+                <kbd className="ml-1 rounded border border-border px-1 py-0.5 text-[9px] text-muted-foreground">
                   F
                 </kbd>
               </Button>
@@ -609,10 +609,10 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
           <span className="grid size-8 place-items-center rounded-[10px] bg-primary text-primary-foreground">
             <MessageSquareText size={15} strokeWidth={2.2} />
           </span>
-          <span className="text-[13px] font-semibold tracking-[-0.03em] text-white">
-            review<span className="text-primary">pulse</span>
+          <span className="text-[13px] font-semibold tracking-[-0.03em] text-foreground">
+            review<span className="text-accent-foreground">pulse</span>
           </span>
-          <span className="mx-1 hidden h-5 w-px bg-white/10 sm:block" />
+          <span className="mx-1 hidden h-5 w-px bg-muted/50 sm:block" />
           <span className="hidden text-xs text-muted-foreground sm:block">Review inbox</span>
         </div>
 
@@ -628,7 +628,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
               </Button>
             </form>
           ) : (
-            <span className="grid size-8 place-items-center rounded-full border border-white/10 bg-white/[0.06] text-[10px] font-semibold text-foreground">
+            <span className="grid size-8 place-items-center rounded-full border border-border bg-muted/50 text-[10px] font-semibold text-foreground">
               RP
             </span>
           )}
@@ -647,10 +647,10 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-[15px] font-semibold tracking-[-0.02em] text-white">
+                  <h1 className="text-[15px] font-semibold tracking-[-0.02em] text-foreground">
                     Review inbox
                   </h1>
-                  <span className="rounded-md border border-white/[0.08] bg-white/[0.04] px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
+                  <span className="rounded-md border border-border bg-muted/50 px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
                     {pendingCount}
                   </span>
                 </div>
@@ -727,7 +727,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
 
             {filteredReviews.length === 0 ? (
               <div className="px-4 py-10 text-center">
-                <span className="mx-auto grid size-9 place-items-center rounded-xl border border-white/[0.07] bg-white/[0.025] text-muted-foreground">
+                <span className="mx-auto grid size-9 place-items-center rounded-xl border border-border bg-muted/50 text-muted-foreground">
                   <Inbox size={16} />
                 </span>
                 <p className="mt-3 text-xs font-medium text-foreground">
@@ -742,7 +742,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
             ) : null}
           </ScrollArea>
 
-          <div className="border-t border-white/[0.06] px-4 py-3">
+          <div className="border-t border-border px-4 py-3">
             <div className="flex items-center gap-2 text-[9px] text-muted-foreground">
               <Clock3 size={11} />
               <span>Last synced just now</span>
@@ -763,12 +763,12 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
         >
           {selectedReview ? (
             <>
-              <div className="flex h-[60px] shrink-0 items-center justify-between border-b border-white/[0.06] px-4 sm:px-7">
+              <div className="flex h-[60px] shrink-0 items-center justify-between border-b border-border px-4 sm:px-7">
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
                     onClick={() => setMobileThreadOpen(false)}
-                    className="grid size-8 place-items-center rounded-lg text-muted-foreground hover:bg-white/[0.05] hover:text-white lg:hidden"
+                    className="grid size-8 place-items-center rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground lg:hidden"
                     aria-label="Back to inbox"
                   >
                     <ArrowLeft size={16} />
@@ -805,8 +805,8 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                       className={cn(
                         "mb-5 flex items-start justify-between gap-3 rounded-xl border px-3.5 py-3 text-xs",
                         notice.tone === "error"
-                          ? "border-rose-300/15 bg-rose-300/[0.06] text-rose-200"
-                          : "border-emerald-300/15 bg-emerald-300/[0.055] text-emerald-100",
+                          ? "border-rose-300/15 bg-rose-300/[0.06] text-rose-700"
+                          : "border-emerald-300/15 bg-emerald-300/[0.055] text-emerald-700",
                       )}
                     >
                       <span className="leading-5">{notice.message}</span>
@@ -826,7 +826,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                       <AvatarFallback>{initials(selectedReview.authorName)}</AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-white">
+                      <p className="truncate text-sm font-semibold text-foreground">
                         {selectedReview.authorName}
                       </p>
                       <div className="mt-1.5 flex flex-wrap items-center gap-2">
@@ -837,7 +837,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                         </span>
                       </div>
                     </div>
-                    <span className="ml-auto hidden rounded-full border border-white/[0.07] px-2.5 py-1 text-[9px] text-muted-foreground sm:inline-flex">
+                    <span className="ml-auto hidden rounded-full border border-border px-2.5 py-1 text-[9px] text-muted-foreground sm:inline-flex">
                       Customer review
                     </span>
                   </div>
@@ -934,7 +934,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                         role="status"
                         aria-live="polite"
                       >
-                        <span className="grid size-8 shrink-0 place-items-center rounded-xl border border-primary/15 bg-primary/10 text-primary">
+                        <span className="grid size-8 shrink-0 place-items-center rounded-xl border border-primary/15 bg-primary/10 text-accent-foreground">
                           <Sparkles size={14} className="animate-pulse" />
                         </span>
                         <span className="flex items-center gap-2 self-center text-xs text-muted-foreground">
@@ -949,8 +949,8 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                     ) : null}
 
                     {visibleMessages.length === 0 && working !== "refine" ? (
-                      <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.015] px-5 py-6 text-center">
-                        <span className="mx-auto grid size-9 place-items-center rounded-xl border border-primary/10 bg-primary/5 text-primary">
+                      <div className="rounded-2xl border border-dashed border-border bg-muted/50 px-5 py-6 text-center">
+                        <span className="mx-auto grid size-9 place-items-center rounded-xl border border-primary/10 bg-primary/5 text-accent-foreground">
                           <WandSparkles size={16} />
                         </span>
                         <p className="mt-3 text-xs font-semibold text-foreground">
@@ -978,7 +978,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
           ) : (
             <div className="grid flex-1 place-items-center p-8">
               <div className="max-w-sm text-center">
-                <span className="mx-auto grid size-12 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.025] text-muted-foreground">
+                <span className="mx-auto grid size-12 place-items-center rounded-2xl border border-border bg-muted/50 text-muted-foreground">
                   <Inbox size={21} />
                 </span>
                 <h2 className="mt-4 text-sm font-semibold text-foreground">
