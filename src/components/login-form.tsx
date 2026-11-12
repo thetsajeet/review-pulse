@@ -55,13 +55,13 @@ export function LoginForm({ hasCallbackError }: { hasCallbackError: boolean }) {
           <MessageSquareText size={17} />
         </span>
         <span className="text-sm font-semibold tracking-[-0.03em] text-white">
-          review<span className="text-emerald-300">pulse</span>
+          review<span className="text-primary">pulse</span>
         </span>
       </Link>
 
       {sent ? (
         <div className="py-2">
-          <span className="grid size-11 place-items-center rounded-2xl border border-emerald-300/15 bg-emerald-300/[0.08] text-emerald-200">
+          <span className="grid size-11 place-items-center rounded-2xl border border-primary/15 bg-primary/10 text-primary">
             <CheckCircle2 size={21} />
           </span>
           <h1 className="mt-6 text-2xl font-semibold tracking-[-0.04em] text-white">
@@ -75,7 +75,7 @@ export function LoginForm({ hasCallbackError }: { hasCallbackError: boolean }) {
         </div>
       ) : (
         <>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200/10 bg-emerald-200/[0.05] px-2.5 py-1 text-[10px] font-medium text-emerald-100">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/10 bg-primary/5 px-2.5 py-1 text-[10px] font-medium text-primary">
             <Mail size={11} />
             Private workspace
           </span>

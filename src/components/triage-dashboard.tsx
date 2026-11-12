@@ -94,7 +94,7 @@ function SentimentBadge({ sentiment }: { sentiment: Sentiment }) {
       variant="outline"
       className={cn(
         sentiment === "Positive" &&
-          "border-primary/20 bg-primary/10 text-primary",
+          "border-emerald-300/20 bg-emerald-300/10 text-emerald-300",
         sentiment === "Neutral" &&
           "border-amber-300/20 bg-amber-300/10 text-amber-200",
         sentiment === "Negative" &&
@@ -235,7 +235,7 @@ function DraftTurn({
       transition={{ duration: 0.16, ease: "easeOut" }}
       className="flex gap-3"
     >
-      <span className="grid size-8 shrink-0 place-items-center rounded-xl border border-violet-300/15 bg-violet-300/[0.09] text-violet-100">
+      <span className="grid size-8 shrink-0 place-items-center rounded-xl border border-primary/15 bg-primary/10 text-primary">
         <WandSparkles size={15} />
       </span>
       <div className="min-w-0 flex-1">
@@ -250,7 +250,7 @@ function DraftTurn({
           className={cn(
             "rounded-2xl rounded-tl-md p-0 text-[13px] leading-[1.8]",
             isLatest
-              ? "border-violet-300/10 bg-card"
+              ? "border-primary/10 bg-card"
               : "border-border bg-muted/50 text-muted-foreground",
           )}
         >
@@ -610,7 +610,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
             <MessageSquareText size={15} strokeWidth={2.2} />
           </span>
           <span className="text-[13px] font-semibold tracking-[-0.03em] text-white">
-            review<span className="text-emerald-300">pulse</span>
+            review<span className="text-primary">pulse</span>
           </span>
           <span className="mx-1 hidden h-5 w-px bg-white/10 sm:block" />
           <span className="hidden text-xs text-slate-500 sm:block">Review inbox</span>
@@ -915,8 +915,8 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                             transition={{ duration: 0.16, ease: "easeOut" }}
                             className="ml-8 flex justify-end"
                           >
-                            <div className="max-w-[85%] rounded-2xl rounded-tr-md border border-emerald-200/10 bg-emerald-200/[0.055] px-4 py-3 text-[12px] leading-[1.75] text-emerald-50/85">
-                              <div className="mb-1.5 flex items-center justify-end gap-1.5 text-[9px] font-medium text-emerald-100/45">
+                            <div className="max-w-[85%] rounded-2xl rounded-tr-md border border-primary/10 bg-primary/5 px-4 py-3 text-[12px] leading-[1.75] text-foreground">
+                              <div className="mb-1.5 flex items-center justify-end gap-1.5 text-[9px] font-medium text-muted-foreground">
                                 Your guidance <CheckCheck size={11} />
                               </div>
                               {message.content}
@@ -934,14 +934,14 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                         role="status"
                         aria-live="polite"
                       >
-                        <span className="grid size-8 shrink-0 place-items-center rounded-xl border border-violet-300/15 bg-violet-300/[0.09] text-violet-100">
+                        <span className="grid size-8 shrink-0 place-items-center rounded-xl border border-primary/15 bg-primary/10 text-primary">
                           <Sparkles size={14} className="animate-pulse" />
                         </span>
                         <span className="flex items-center gap-2 self-center text-xs text-slate-500">
                           <span className="flex gap-1">
-                            <span className="size-1 animate-bounce rounded-full bg-violet-200/70 [animation-delay:-0.2s]" />
-                            <span className="size-1 animate-bounce rounded-full bg-violet-200/70 [animation-delay:-0.1s]" />
-                            <span className="size-1 animate-bounce rounded-full bg-violet-200/70" />
+                            <span className="size-1 animate-bounce rounded-full bg-primary/70 [animation-delay:-0.2s]" />
+                            <span className="size-1 animate-bounce rounded-full bg-primary/70 [animation-delay:-0.1s]" />
+                            <span className="size-1 animate-bounce rounded-full bg-primary/70" />
                           </span>
                           ReviewAgent is refining the response
                         </span>
@@ -950,7 +950,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
 
                     {visibleMessages.length === 0 && working !== "refine" ? (
                       <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.015] px-5 py-6 text-center">
-                        <span className="mx-auto grid size-9 place-items-center rounded-xl border border-violet-300/10 bg-violet-300/[0.06] text-violet-200">
+                        <span className="mx-auto grid size-9 place-items-center rounded-xl border border-primary/10 bg-primary/5 text-primary">
                           <WandSparkles size={16} />
                         </span>
                         <p className="mt-3 text-xs font-semibold text-slate-200">

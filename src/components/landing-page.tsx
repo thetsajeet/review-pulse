@@ -57,7 +57,7 @@ export function LandingPage() {
             <MessageSquareText size={18} strokeWidth={2.2} />
           </span>
           <span className="text-[15px] font-semibold tracking-[-0.03em] text-foreground">
-            review<span className="text-emerald-300">pulse</span>
+            review<span className="text-primary">pulse</span>
           </span>
         </Link>
 
@@ -87,15 +87,15 @@ export function LandingPage() {
         >
           <Badge variant="outline" className="mb-7 h-auto gap-2 border-primary/20 bg-primary/5 px-3 py-1.5 text-[11px] font-medium tracking-wide text-primary">
             <span className="relative flex size-1.5">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-300 opacity-60" />
-              <span className="relative inline-flex size-1.5 rounded-full bg-emerald-300" />
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
+              <span className="relative inline-flex size-1.5 rounded-full bg-primary" />
             </span>
             YOUR REVIEWS, WITH A HUMAN TOUCH
           </Badge>
 
           <h1 className="max-w-[650px] text-[clamp(2.8rem,6.2vw,5.25rem)] font-semibold leading-[0.99] tracking-[-0.075em] text-white">
             Every review deserves a{" "}
-            <span className="bg-gradient-to-r from-primary via-emerald-100 to-foreground bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary via-primary/80 to-foreground bg-clip-text text-transparent">
               thoughtful reply.
             </span>
           </h1>
@@ -126,7 +126,7 @@ export function LandingPage() {
                 (color, index) => (
                   <span
                     key={color}
-                    className={`grid size-7 place-items-center rounded-full border-2 border-[#0b0d12] ${color} text-[9px] font-bold text-slate-900`}
+                    className={`grid size-7 place-items-center rounded-full border-2 border-background ${color} text-[9px] font-bold text-slate-900`}
                     aria-hidden
                   >
                     {["M", "A", "J", "S"][index]}
@@ -179,7 +179,7 @@ export function LandingPage() {
                       initial={{ opacity: 0, x: -8 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.35 + index * 0.1 }}
-                      className={`rounded-xl p-2.5 ${index === 0 ? "border border-emerald-200/10 bg-emerald-200/[0.055]" : "border border-transparent"}`}
+                      className={`rounded-xl p-2.5 ${index === 0 ? "border border-primary/20 bg-primary/5" : "border border-transparent"}`}
                     >
                       <div className="flex items-center justify-between gap-2">
                         <span className="truncate text-[10px] font-medium text-slate-200">
@@ -230,14 +230,14 @@ export function LandingPage() {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.75 }}
-                  className="mt-auto rounded-xl border border-violet-300/10 bg-violet-300/[0.045] p-3"
+                  className="mt-auto rounded-xl border border-primary/10 bg-primary/5 p-3"
                 >
                   <div className="mb-2 flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 text-[9px] font-semibold text-violet-100">
-                      <WandSparkles size={11} className="text-violet-200" />
+                    <span className="flex items-center gap-1.5 text-[9px] font-semibold text-foreground">
+                      <WandSparkles size={11} className="text-primary" />
                       ReviewAgent draft
                     </span>
-                    <span className="rounded-full bg-emerald-300/[0.08] px-1.5 py-0.5 text-[8px] text-emerald-200">
+                    <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[8px] text-primary">
                       On brand
                     </span>
                   </div>
@@ -260,12 +260,12 @@ export function LandingPage() {
               </div>
 
             <div className="flex items-center gap-2 border-t border-white/[0.07] bg-black/10 px-4 py-3">
-              <Sparkles size={12} className="text-emerald-200" />
+              <Sparkles size={12} className="text-primary" />
               <span className="text-[9px] text-slate-500">
                 Thoughtful replies, ready when you are.
               </span>
               <span className="ml-auto flex items-center gap-1 text-[8px] text-slate-600">
-                <span className="size-1 rounded-full bg-emerald-300" />
+                <span className="size-1 rounded-full bg-primary" />
                 Gemini powered
               </span>
             </div>
@@ -294,11 +294,11 @@ export function LandingPage() {
 
       <section
         id="how-it-works"
-        className="relative z-10 border-t border-white/[0.06] bg-[#0b0d12]/80"
+        className="relative z-10 border-t border-border bg-background/80"
       >
         <div className="mx-auto max-w-7xl px-6 py-20 sm:px-10 lg:py-24">
           <div className="mx-auto max-w-xl text-center">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-200">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
               A better way to respond
             </span>
             <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-white sm:text-4xl">
@@ -348,7 +348,7 @@ export function LandingPage() {
 
           <div
             id="built-for-trust"
-            className="mt-14 flex flex-col items-center justify-between gap-5 rounded-2xl border border-white/[0.07] bg-gradient-to-r from-emerald-300/[0.04] via-white/[0.025] to-violet-300/[0.04] p-6 sm:flex-row sm:px-8"
+            className="mt-14 flex flex-col items-center justify-between gap-5 rounded-2xl border border-border bg-gradient-to-r from-primary/5 via-card to-primary/5 p-6 sm:flex-row sm:px-8"
           >
             <div className="flex items-center gap-4">
               <span className="grid size-11 place-items-center rounded-full border border-primary/10 bg-primary/5 text-primary">
@@ -377,7 +377,7 @@ export function LandingPage() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-6 text-[10px] text-slate-600 sm:flex-row sm:px-10">
           <span>© Review Pulse</span>
           <span className="flex items-center gap-1.5">
-            <Star size={10} className="text-emerald-300" />
+            <Star size={10} className="text-primary" />
             Thoughtful replies. Stronger relationships.
           </span>
           <Link className="inline-flex items-center gap-1 hover:text-slate-400" href="/triage">
