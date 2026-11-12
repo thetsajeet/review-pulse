@@ -8,6 +8,7 @@ import { createDemoReviews } from "@/lib/reviews/demo-reviews";
 import { sentimentFromRating } from "@/lib/reviews/sentiment";
 import { generateReviewDraft } from "@/lib/reviews/review-agent";
 import type { Review } from "@/lib/reviews/types";
+import { logActivity, withServerActivity, type Activity } from "@/lib/server-activity";
 import { getSupabaseConfig } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 
@@ -93,6 +94,10 @@ export async function sendSignInLink(email: string) {
 }
 
 export async function simulateDemoReview(): Promise<Review> {
+  return withServerActivity("demo.add-review", createSimulatedReview);
+}
+
+async function createSimulatedReview(): Promise<Review> {
   if (getSupabaseConfig()) {
     throw new Error("Simulated reviews are only available in the demo workspace.");
   }
@@ -126,6 +131,16 @@ export async function updateReviewStatus(
   reviewId: string,
   status: "APPROVED" | "REJECTED",
 ) {
+  return withServerActivity("review.update-status", async (activity) => {
+    await updateStatus(reviewId, status, activity);
+  });
+}
+
+async function updateStatus(
+  reviewId: string,
+  status: "APPROVED" | "REJECTED",
+  activity: Activity,
+) {
   if (!reviewIdSchema.safeParse(reviewId).success) {
     throw new Error("Invalid review identifier.");
   }
@@ -134,6 +149,10 @@ export async function updateReviewStatus(
   }
 
   const config = getSupabaseConfig();
+  logActivity(activity, "status.validated", {
+    status,
+    mode: config ? "supabase" : "demo",
+  });
   if (!config) return;
 
   const supabase = await createClient();
@@ -145,6 +164,7 @@ export async function updateReviewStatus(
   if (authError) throw new Error(`Unable to verify your session: ${authError.message}`);
   if (!user) throw new Error("Sign in to update this review.");
 
+  logActivity(activity, "supabase.update.started");
   const { data, error } = await supabase
     .from("reviews")
     .update({ status })
@@ -156,11 +176,21 @@ export async function updateReviewStatus(
   if (error) throw new Error(`Unable to update review: ${error.message}`);
   if (!data) throw new Error("This review is no longer awaiting review.");
 
+  logActivity(activity, "supabase.update.completed");
   revalidatePath("/triage");
 }
 
 export async function refineReviewDraft(
   input: z.infer<typeof refineInputSchema>,
+): Promise<{ draft: string; sentiment: Review["sentiment"] }> {
+  return withServerActivity("review.generate-draft", (activity) =>
+    generateDraft(input, activity),
+  );
+}
+
+async function generateDraft(
+  input: z.infer<typeof refineInputSchema>,
+  activity: Activity,
 ): Promise<{ draft: string; sentiment: Review["sentiment"] }> {
   const parsed = refineInputSchema.safeParse(input);
   if (!parsed.success) {
@@ -170,6 +200,11 @@ export async function refineReviewDraft(
   const { reviewId, feedback, messages, demoReview: suppliedDemoReview } =
     parsed.data;
   const config = getSupabaseConfig();
+  logActivity(activity, "input.validated", {
+    mode: config ? "supabase" : "demo",
+    historyMessages: messages.length,
+    hasFeedback: Boolean(feedback),
+  });
 
   let review: Review;
   if (config) {
@@ -184,6 +219,7 @@ export async function refineReviewDraft(
     }
     if (!user) throw new Error("Sign in to refine this review response.");
 
+    logActivity(activity, "supabase.review-load.started");
     const { data, error } = await supabase
       .from("reviews")
       .select("id, author_name, rating, review_text, review_date, sentiment, draft_response, status")
@@ -193,6 +229,7 @@ export async function refineReviewDraft(
 
     if (error) throw new Error(`Unable to load review: ${error.message}`);
 
+    logActivity(activity, "supabase.review-load.completed");
     review = {
       id: data.id,
       authorName: data.author_name,
@@ -222,9 +259,11 @@ export async function refineReviewDraft(
       review,
       messages,
       feedback,
+      activity,
     });
     draft = generated.draft;
   } else if (!config) {
+    logActivity(activity, "demo.template-used");
     draft = createDemoDraft(review);
   } else {
     throw new Error("Set GEMINI_API_KEY to enable Gemini draft generation.");
@@ -232,6 +271,7 @@ export async function refineReviewDraft(
 
   if (config) {
     const supabase = await createClient();
+    logActivity(activity, "supabase.draft-save.started");
     const { data, error } = await supabase
       .from("reviews")
       .update({
@@ -245,6 +285,7 @@ export async function refineReviewDraft(
 
     if (error) throw new Error(`Unable to save the response draft: ${error.message}`);
     if (!data) throw new Error("This review is no longer awaiting review.");
+    logActivity(activity, "supabase.draft-save.completed");
     revalidatePath("/triage");
   }
 

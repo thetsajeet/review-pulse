@@ -2,6 +2,8 @@
 
 Review Pulse helps a business owner triage customer reviews and prepare brand-aligned replies. The app uses Next.js 16 App Router, React 19, Tailwind CSS v4, shadcn/ui, Framer Motion, Supabase, and LangGraph with Gemini.
 
+The dark theme is based on TweakCN's [openprofile theme](https://tweakcn.com/r/themes/cmi0kusqy000004jlhzfjfpim).
+
 ## Run locally
 
 ```bash
@@ -36,6 +38,10 @@ The migration enables RLS on all three public tables and scopes access through t
 - **Refactor** opens an instruction field under the draft actions and sends the entered guidance plus the full ordered thread of owner comments and prior drafts through LangGraph. Gemini calls require `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) when Supabase is configured.
 - Review sentiment is derived from its rating: 1–2 Negative, 3 Neutral, and 4–5 Positive.
 - Approve and Reject update the review state in Supabase, or simulate that change in demo mode. Rejected reviews remain visible with a **Rejected** status. Approval does **not** publish to Google Business Profile yet.
+
+## Terminal activity logs
+
+UI-triggered review actions log their progress in the Next.js server terminal, not the browser console. Draft-generation logs include a request ID, workflow stages, Gemini request timing and outcome, and whether a demo template was used. Supabase review loads and saves are logged when configured. These activity logs do not include review text, conversation content, generated drafts, credentials, or raw provider errors.
 
 ## Commands
 
