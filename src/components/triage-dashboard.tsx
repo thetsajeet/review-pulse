@@ -3,15 +3,13 @@
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft,
-  ArrowUp,
   Check,
   CheckCheck,
   Clock3,
-  Command,
   Inbox,
   MessageSquareText,
+  Plus,
   Search,
-  ShieldCheck,
   Sparkles,
   Star,
   ThumbsDown,
@@ -25,7 +23,12 @@ import {
   useState,
   type FormEvent,
 } from "react";
-import { refineReviewDraft, signOut, updateReviewStatus } from "@/app/actions";
+import {
+  refineReviewDraft,
+  signOut,
+  simulateDemoReview,
+  updateReviewStatus,
+} from "@/app/actions";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -48,8 +51,6 @@ type Notice = { tone: "success" | "error"; message: string };
 type Action = "approve" | "reject" | "refine";
 
 const filters: SentimentFilter[] = ["All", "Positive", "Neutral", "Negative"];
-const defaultFeedback =
-  "Make this reply more concise, warm, and specific to the customer's experience.";
 
 function relativeTime(value: string) {
   const date = new Date(value);
@@ -169,7 +170,22 @@ function ReviewCard({
           </span>
           <span className="mt-2.5 flex items-center justify-between">
             <SentimentBadge sentiment={sentimentFromRating(review.rating)} />
-            <span className="text-[9px] text-slate-600">New review</span>
+            <span
+              className={cn(
+                "text-[9px]",
+                review.status === "REJECTED"
+                  ? "text-destructive"
+                  : review.status === "APPROVED"
+                    ? "text-primary"
+                    : "text-slate-600",
+              )}
+            >
+              {review.status === "PENDING_REVIEW"
+                ? "New review"
+                : review.status === "APPROVED"
+                  ? "Approved"
+                  : "Rejected"}
+            </span>
           </span>
         </span>
       </div>
@@ -183,18 +199,30 @@ function DraftTurn({
   content,
   isLatest,
   isApproved,
+  isPending,
+  refactorOpen,
+  feedback,
   onApprove,
   onReject,
-  onRefine,
+  onOpenRefactor,
+  onFeedbackChange,
+  onSubmitRefactor,
+  onCancelRefactor,
   working,
   isDemo,
 }: {
   content: string;
   isLatest: boolean;
   isApproved: boolean;
+  isPending: boolean;
+  refactorOpen: boolean;
+  feedback: string;
   onApprove: () => void;
   onReject: () => void;
-  onRefine: () => void;
+  onOpenRefactor: () => void;
+  onFeedbackChange: (feedback: string) => void;
+  onSubmitRefactor: (event: FormEvent<HTMLFormElement>) => void;
+  onCancelRefactor: () => void;
   working: Action | null;
   isDemo: boolean;
 }) {
@@ -241,55 +269,98 @@ function DraftTurn({
             </span>
           </div>
         ) : null}
-        {isLatest && !isApproved ? (
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <Button
-              size="sm"
-              onClick={onApprove}
-              disabled={working !== null}
-              className="h-8 rounded-lg px-3 text-[11px]"
-            >
-              {working === "approve" ? (
-                <span className="size-3 animate-spin rounded-full border border-slate-900/30 border-t-slate-900" />
-              ) : (
-                <Check size={13} strokeWidth={2.5} />
-              )}
-              Approve
-              <kbd className="ml-1 rounded border border-slate-900/15 px-1 py-0.5 text-[9px] font-medium text-slate-800/70">
-                A
-              </kbd>
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={onReject}
-              disabled={working !== null}
-              className="h-8 rounded-lg px-3 text-[11px]"
-            >
-              {working === "reject" ? (
-                <span className="size-3 animate-spin rounded-full border border-rose-200/30 border-t-rose-200" />
-              ) : (
-                <ThumbsDown size={12} />
-              )}
-              Reject
-              <kbd className="ml-1 rounded border border-white/10 px-1 py-0.5 text-[9px] text-slate-500">
-                R
-              </kbd>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onRefine}
-              disabled={working !== null}
-              className="h-8 rounded-lg px-3 text-[11px]"
-            >
-              <WandSparkles size={12} />
-              Refactor
-              <kbd className="ml-1 rounded border border-white/10 px-1 py-0.5 text-[9px] text-slate-500">
-                F
-              </kbd>
-            </Button>
-          </div>
+        {isLatest && isPending ? (
+          <>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <Button
+                size="sm"
+                onClick={onApprove}
+                disabled={working !== null}
+                className="h-8 rounded-lg px-3 text-[11px]"
+              >
+                {working === "approve" ? (
+                  <span className="size-3 animate-spin rounded-full border border-slate-900/30 border-t-slate-900" />
+                ) : (
+                  <Check size={13} strokeWidth={2.5} />
+                )}
+                Approve
+                <kbd className="ml-1 rounded border border-slate-900/15 px-1 py-0.5 text-[9px] font-medium text-slate-800/70">
+                  A
+                </kbd>
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={onReject}
+                disabled={working !== null}
+                className="h-8 rounded-lg px-3 text-[11px]"
+              >
+                {working === "reject" ? (
+                  <span className="size-3 animate-spin rounded-full border border-rose-200/30 border-t-rose-200" />
+                ) : (
+                  <ThumbsDown size={12} />
+                )}
+                Reject
+                <kbd className="ml-1 rounded border border-white/10 px-1 py-0.5 text-[9px] text-slate-500">
+                  R
+                </kbd>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onOpenRefactor}
+                disabled={working !== null}
+                aria-expanded={refactorOpen}
+                className="h-8 rounded-lg px-3 text-[11px]"
+              >
+                <WandSparkles size={12} />
+                Refactor
+                <kbd className="ml-1 rounded border border-white/10 px-1 py-0.5 text-[9px] text-slate-500">
+                  F
+                </kbd>
+              </Button>
+            </div>
+            {refactorOpen ? (
+              <form
+                onSubmit={onSubmitRefactor}
+                className="mt-3 rounded-xl border border-border bg-background/70 p-3"
+              >
+                <Textarea
+                  autoFocus
+                  value={feedback}
+                  onChange={(event) => onFeedbackChange(event.target.value)}
+                  maxLength={1200}
+                  placeholder="What should change in this response?"
+                  aria-label="Refactor instructions"
+                  className="min-h-20 border-0 bg-transparent text-xs shadow-none focus-visible:ring-0"
+                  disabled={working !== null}
+                />
+                <div className="mt-2 flex items-center justify-between gap-2">
+                  <span className="text-[10px] text-muted-foreground">
+                    Your instructions guide the next draft.
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={onCancelRefactor}
+                      disabled={working !== null}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      size="sm"
+                      disabled={!feedback.trim() || working !== null}
+                    >
+                      {working === "refine" ? "Generating…" : "Regenerate"}
+                    </Button>
+                  </div>
+                </div>
+              </form>
+            ) : null}
+          </>
         ) : null}
       </div>
     </motion.article>
@@ -303,7 +374,9 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
   const [filter, setFilter] = useState<SentimentFilter>("All");
   const [query, setQuery] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [refactorOpenId, setRefactorOpenId] = useState<string | null>(null);
   const [working, setWorking] = useState<Action | null>(null);
+  const [addingReview, setAddingReview] = useState(false);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [mobileThreadOpen, setMobileThreadOpen] = useState(false);
 
@@ -346,13 +419,13 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
       try {
         await updateReviewStatus(review.id, status);
         if (status === "REJECTED") {
-          setReviews((current) => current.filter((item) => item.id !== review.id));
-          setSelectedId((current) => {
-            if (current !== review.id) return current;
-            return reviews.find((item) => item.id !== review.id)?.id ?? "";
-          });
-          setMobileThreadOpen(false);
-          setNotice({ tone: "success", message: "Review archived." });
+          setReviews((current) =>
+            current.map((item) =>
+              item.id === review.id ? { ...item, status: "REJECTED" } : item,
+            ),
+          );
+          setRefactorOpenId(null);
+          setNotice({ tone: "success", message: "Review marked as rejected." });
         } else {
           setReviews((current) =>
             current.map((item) =>
@@ -374,8 +447,50 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
         setWorking(null);
       }
     },
-    [reviews, selectedReview, working],
+    [selectedReview, working],
   );
+
+  const handleAddDemoReview = useCallback(async () => {
+    if (mode !== "demo" || addingReview || working) return;
+    setAddingReview(true);
+    setNotice(null);
+
+    try {
+      const review = await simulateDemoReview();
+      setReviews((current) => [review, ...current]);
+      setSelectedId(review.id);
+      setFilter("All");
+      setQuery("");
+      setFeedback("");
+      setRefactorOpenId(null);
+      setMobileThreadOpen(true);
+      setWorking("refine");
+
+      const result = await refineReviewDraft({
+        reviewId: review.id,
+        feedback: "",
+        messages: [],
+        demoReview: review,
+      });
+      setReviews((current) =>
+        current.map((item) =>
+          item.id === review.id
+            ? { ...item, draftResponse: result.draft, sentiment: result.sentiment }
+            : item,
+        ),
+      );
+      setNotice({ tone: "success", message: "ReviewAgent drafted a response." });
+    } catch (error) {
+      setNotice({
+        tone: "error",
+        message:
+          error instanceof Error ? error.message : "Unable to simulate a review.",
+      });
+    } finally {
+      setAddingReview(false);
+      setWorking(null);
+    }
+  }, [addingReview, mode, working]);
 
   const handleRefine = useCallback(
     async (instruction: string) => {
@@ -396,6 +511,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
           reviewId: review.id,
           feedback: instruction,
           messages: history,
+          demoReview: mode === "demo" ? review : undefined,
         });
         const nextMessages: ThreadMessage[] = [
           ...history,
@@ -411,6 +527,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
           ),
         );
         setFeedback("");
+        setRefactorOpenId(null);
         setNotice({
           tone: "success",
           message: mode === "demo" ? "Demo draft refined." : "Draft updated.",
@@ -458,15 +575,16 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
         void handleStatus("REJECTED");
       } else if (key === "f" && selectedReview.status === "PENDING_REVIEW") {
         event.preventDefault();
-        void handleRefine(feedback.trim() || defaultFeedback);
+        setRefactorOpenId(selectedReview.id);
+        setNotice(null);
       }
     }
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [feedback, handleRefine, handleStatus, selectedReview, working]);
+  }, [handleStatus, selectedReview, working]);
 
-  function submitFeedback(event: FormEvent<HTMLFormElement>) {
+  function submitRefactor(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const instruction = feedback.trim();
     if (instruction) void handleRefine(instruction);
@@ -474,6 +592,8 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
 
   function selectReview(review: Review) {
     setSelectedId(review.id);
+    setFeedback("");
+    setRefactorOpenId(null);
     setMobileThreadOpen(true);
     setNotice(null);
   }
@@ -536,6 +656,22 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                   Keep every customer heard.
                 </p>
               </div>
+              {mode === "demo" ? (
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => void handleAddDemoReview()}
+                  disabled={addingReview || working !== null}
+                  className="h-8 rounded-lg px-2.5 text-[10px]"
+                >
+                  {addingReview ? (
+                    <span className="size-3 animate-spin rounded-full border border-slate-900/30 border-t-slate-900" />
+                  ) : (
+                    <Plus size={13} />
+                  )}
+                  Add review
+                </Button>
+              ) : null}
             </div>
 
             <label className="mt-5 flex h-9 items-center gap-2 rounded-lg border border-input bg-background px-2.5 text-muted-foreground focus-within:border-ring">
@@ -570,7 +706,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
             <div className="mb-2 flex items-center gap-2 px-2.5 pt-1.5">
               <Inbox size={12} className="text-slate-600" />
               <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-600">
-                Needs a reply
+                Reviews
               </span>
               <span className="ml-auto text-[9px] text-slate-600">
                 {filteredReviews.length}
@@ -645,6 +781,13 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                 </div>
                 <div className="flex items-center gap-2">
                   <SentimentBadge sentiment={sentimentFromRating(selectedReview.rating)} />
+                  {selectedReview.status !== "PENDING_REVIEW" ? (
+                    <Badge
+                      variant={selectedReview.status === "REJECTED" ? "destructive" : "secondary"}
+                    >
+                      {selectedReview.status === "REJECTED" ? "Rejected" : "Approved"}
+                    </Badge>
+                  ) : null}
                 </div>
               </div>
 
@@ -741,11 +884,23 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                               index === latestAssistantIndex &&
                               selectedReview.status === "APPROVED"
                             }
+                            isPending={selectedReview.status === "PENDING_REVIEW"}
+                            refactorOpen={refactorOpenId === selectedReview.id}
+                            feedback={feedback}
                             onApprove={() => void handleStatus("APPROVED")}
                             onReject={() => void handleStatus("REJECTED")}
-                            onRefine={() =>
-                              void handleRefine(feedback.trim() || defaultFeedback)
-                            }
+                            onOpenRefactor={() => {
+                              setRefactorOpenId((current) =>
+                                current === selectedReview.id ? null : selectedReview.id,
+                              );
+                              setNotice(null);
+                            }}
+                            onFeedbackChange={setFeedback}
+                            onSubmitRefactor={submitRefactor}
+                            onCancelRefactor={() => {
+                              setRefactorOpenId(null);
+                              setFeedback("");
+                            }}
                             working={working}
                             isDemo={mode === "demo"}
                           />
@@ -799,7 +954,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                           Ready for a thoughtful first draft
                         </p>
                         <p className="mx-auto mt-1.5 max-w-sm text-[10px] leading-5 text-slate-500">
-                          ReviewAgent will use the rating, review, and your guidance to create a response.
+                          Generate a response draft from this customer&apos;s review.
                         </p>
                         <Button
                           size="sm"
@@ -816,60 +971,6 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                 </div>
               </div>
               </ScrollArea>
-
-              <div className="shrink-0 border-t border-white/[0.07] bg-[#0b0d12] px-4 py-4 sm:px-7">
-                <form
-                  onSubmit={submitFeedback}
-                  className="mx-auto max-w-[760px] rounded-2xl border border-white/[0.09] bg-[#10131a] p-2.5 transition focus-within:border-emerald-200/20"
-                >
-                  <Textarea
-                    value={feedback}
-                    onChange={(event) => setFeedback(event.target.value)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" && !event.shiftKey) {
-                        event.preventDefault();
-                        event.currentTarget.form?.requestSubmit();
-                      }
-                    }}
-                    maxLength={1200}
-                    placeholder="Guide the next draft… e.g. “Keep it brief and mention our weekend hours.”"
-                    aria-label="Instructions for the next response draft"
-                    className="min-h-[54px] border-0 bg-transparent px-2 py-2 text-[12px] leading-5 shadow-none focus:ring-0"
-                    disabled={working !== null || selectedReview.status !== "PENDING_REVIEW"}
-                  />
-                  <div className="flex items-center justify-between px-1 pt-1">
-                    <div className="flex items-center gap-2 text-[9px] text-slate-600">
-                      <span className="hidden items-center gap-1 sm:inline-flex">
-                        <Command size={10} /> Enter to send
-                      </span>
-                      <span className="hidden sm:inline">·</span>
-                      <span>{mode === "demo" ? "Demo responses are simulated" : "AI drafts need your approval"}</span>
-                    </div>
-                    <Button
-                      size="icon"
-                      type="submit"
-                      aria-label="Send instructions and refine response"
-                      disabled={
-                        !feedback.trim() ||
-                        working !== null ||
-                        selectedReview.status !== "PENDING_REVIEW"
-                      }
-                      className="size-8 rounded-lg"
-                    >
-                      {working === "refine" ? (
-                        <span className="size-3.5 animate-spin rounded-full border border-slate-900/30 border-t-slate-900" />
-                      ) : (
-                        <ArrowUp size={15} strokeWidth={2.5} />
-                      )}
-                    </Button>
-                  </div>
-                </form>
-                <div className="mx-auto mt-2.5 flex max-w-[760px] items-center justify-center gap-3 text-[9px] text-slate-600">
-                  <span className="inline-flex items-center gap-1">
-                    <ShieldCheck size={10} /> No reply is sent without your approval
-                  </span>
-                </div>
-              </div>
             </>
           ) : (
             <div className="grid flex-1 place-items-center p-8">

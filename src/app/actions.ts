@@ -1,5 +1,6 @@
 "use server";
 
+import { randomInt, randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -16,12 +17,46 @@ const threadMessageSchema = z.object({
   role: z.enum(["user", "assistant"]),
   content: z.string().min(1).max(2000),
 });
+const reviewSchema = z
+  .object({
+    id: reviewIdSchema,
+    authorName: z.string().min(1).max(200),
+    rating: z.number().int().min(1).max(5),
+    reviewText: z.string().min(1).max(5000),
+    reviewDate: z.string().datetime(),
+    sentiment: z.enum(["Positive", "Neutral", "Negative"]),
+    draftResponse: z.string().max(5000).nullable(),
+    status: z.enum(["PENDING_REVIEW", "APPROVED", "REJECTED"]),
+  })
+  .refine((review) => review.sentiment === sentimentFromRating(review.rating));
 
 const refineInputSchema = z.object({
   reviewId: reviewIdSchema,
   feedback: z.string().trim().max(1200).default(""),
   messages: z.array(threadMessageSchema).max(20).default([]),
+  demoReview: reviewSchema.optional(),
 });
+
+const simulatedReviews = [
+  {
+    authorName: "Avery Thompson",
+    rating: 5,
+    reviewText:
+      "A lovely evening from start to finish. The staff made us feel welcome, and the seasonal pasta was the best meal we have had in a long time.",
+  },
+  {
+    authorName: "Noah Williams",
+    rating: 3,
+    reviewText:
+      "The food was good and the portions were generous. Service took longer than expected, but the team was friendly.",
+  },
+  {
+    authorName: "Mia Robinson",
+    rating: 2,
+    reviewText:
+      "We waited a long time for our order, and one dish arrived cold. I hope the restaurant can improve the experience.",
+  },
+] as const;
 
 export async function sendSignInLink(email: string) {
   const parsedEmail = z.string().trim().email().safeParse(email);
@@ -43,6 +78,26 @@ export async function sendSignInLink(email: string) {
 
   if (error) return { error: error.message };
   return { sent: true };
+}
+
+export async function simulateDemoReview(): Promise<Review> {
+  if (getSupabaseConfig()) {
+    throw new Error("Simulated reviews are only available in the demo workspace.");
+  }
+
+  const sample = simulatedReviews[randomInt(simulatedReviews.length)];
+  const review: Review = {
+    id: randomUUID(),
+    authorName: sample.authorName,
+    rating: sample.rating,
+    reviewText: sample.reviewText,
+    reviewDate: new Date().toISOString(),
+    sentiment: sentimentFromRating(sample.rating),
+    draftResponse: null,
+    status: "PENDING_REVIEW",
+  };
+
+  return review;
 }
 
 export async function signOut() {
@@ -92,17 +147,16 @@ export async function updateReviewStatus(
   revalidatePath("/triage");
 }
 
-export async function refineReviewDraft(input: {
-  reviewId: string;
-  feedback: string;
-  messages: { role: "user" | "assistant"; content: string }[];
-}): Promise<{ draft: string; sentiment: Review["sentiment"] }> {
+export async function refineReviewDraft(
+  input: z.infer<typeof refineInputSchema>,
+): Promise<{ draft: string; sentiment: Review["sentiment"] }> {
   const parsed = refineInputSchema.safeParse(input);
   if (!parsed.success) {
     throw new Error("Review feedback is invalid or too long.");
   }
 
-  const { reviewId, feedback, messages } = parsed.data;
+  const { reviewId, feedback, messages, demoReview: suppliedDemoReview } =
+    parsed.data;
   const config = getSupabaseConfig();
 
   let review: Review;
@@ -138,7 +192,11 @@ export async function refineReviewDraft(input: {
       status: data.status,
     };
   } else {
-    const demoReview = createDemoReviews().find((item) => item.id === reviewId);
+    const demoReview =
+      suppliedDemoReview?.id === reviewId &&
+      suppliedDemoReview.status === "PENDING_REVIEW"
+        ? suppliedDemoReview
+        : createDemoReviews().find((item) => item.id === reviewId);
     if (!demoReview) throw new Error("The demo review could not be found.");
     review = demoReview;
   }

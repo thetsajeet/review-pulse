@@ -30,7 +30,7 @@ export default async function TriagePage() {
     .select(
       "id, author_name, rating, review_text, review_date, sentiment, draft_response, status",
     )
-    .eq("status", "PENDING_REVIEW")
+    .in("status", ["PENDING_REVIEW", "REJECTED"])
     .order("review_date", { ascending: false });
 
   if (error) throw new Error(`Unable to load reviews: ${error.message}`);
