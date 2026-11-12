@@ -114,8 +114,8 @@ export function LandingPage() {
                 </Link>
               </Button>
             </motion.div>
-            <span className="flex items-center gap-2 text-xs text-slate-500">
-              <ShieldCheck size={15} className="text-slate-400" />
+            <span className="flex items-center gap-2 text-xs text-muted-foreground">
+              <ShieldCheck size={15} className="text-muted-foreground" />
               You stay in control of every reply
             </span>
           </div>
@@ -134,8 +134,8 @@ export function LandingPage() {
                 ),
               )}
             </div>
-            <p className="text-xs text-slate-500">
-              <span className="font-medium text-slate-200">Made for people</span>
+            <p className="text-xs text-muted-foreground">
+              <span className="font-medium text-foreground">Made for people</span>
               {" "}who care about their customers
             </p>
           </div>
@@ -155,8 +155,8 @@ export function LandingPage() {
                   <MessageSquareText size={15} />
                 </span>
                 <div>
-                  <p className="text-xs font-semibold text-slate-100">Review inbox</p>
-                  <p className="mt-0.5 text-[10px] text-slate-500">The Juniper Table</p>
+                  <p className="text-xs font-semibold text-foreground">Review inbox</p>
+                  <p className="mt-0.5 text-[10px] text-muted-foreground">The Juniper Table</p>
                 </div>
               </div>
               <Badge variant="outline" className="h-auto border-primary/20 bg-primary/5 px-2.5 py-1 text-[9px] font-medium text-primary">
@@ -167,10 +167,10 @@ export function LandingPage() {
             <div className="grid min-h-[348px] grid-cols-[0.92fr_1.08fr] gap-0">
               <div className="border-r border-white/[0.07] p-3">
                 <div className="mb-2 flex items-center justify-between px-1.5">
-                  <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                     Recent
                   </span>
-                  <span className="text-[9px] text-slate-600">View all</span>
+                  <span className="text-[9px] text-muted-foreground">View all</span>
                 </div>
                 <div className="space-y-1">
                   {reviewPreview.map((review, index) => (
@@ -182,7 +182,7 @@ export function LandingPage() {
                       className={`rounded-xl p-2.5 ${index === 0 ? "border border-primary/20 bg-primary/5" : "border border-transparent"}`}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="truncate text-[10px] font-medium text-slate-200">
+                        <span className="truncate text-[10px] font-medium text-foreground">
                           {review.name}
                         </span>
                         <span className="flex shrink-0 gap-0.5 text-amber-200">
@@ -191,12 +191,12 @@ export function LandingPage() {
                               key={star}
                               size={7}
                               fill={star < review.stars ? "currentColor" : "transparent"}
-                              className={star < review.stars ? "" : "text-slate-700"}
+                              className={star < review.stars ? "" : "text-muted-foreground/40"}
                             />
                           ))}
                         </span>
                       </div>
-                      <p className="mt-1 truncate text-[9px] leading-4 text-slate-500">
+                      <p className="mt-1 truncate text-[9px] leading-4 text-muted-foreground">
                         {review.note}
                       </p>
                       <span className={`mt-1.5 block text-[8px] ${review.color}`}>
@@ -213,7 +213,7 @@ export function LandingPage() {
                     OC
                   </span>
                   <div>
-                    <p className="text-[10px] font-medium text-slate-200">Olivia Chen</p>
+                    <p className="text-[10px] font-medium text-foreground">Olivia Chen</p>
                     <div className="mt-0.5 flex gap-0.5 text-amber-200">
                       {Array.from({ length: 5 }).map((_, index) => (
                         <Star key={index} size={8} fill="currentColor" />
@@ -221,7 +221,7 @@ export function LandingPage() {
                     </div>
                   </div>
                 </div>
-                <p className="mt-3 text-[10px] leading-[1.8] text-slate-400">
+                <p className="mt-3 text-[10px] leading-[1.8] text-muted-foreground">
                   The team made our anniversary dinner feel special from the
                   moment we walked in. We will absolutely be back.
                 </p>
@@ -241,7 +241,7 @@ export function LandingPage() {
                       On brand
                     </span>
                   </div>
-                  <p className="text-[9px] leading-[1.8] text-slate-400">
+                  <p className="text-[9px] leading-[1.8] text-muted-foreground">
                     Olivia, thank you for celebrating with us. We are so glad
                     you enjoyed your evening, and we look forward to welcoming
                     you back.
@@ -250,10 +250,10 @@ export function LandingPage() {
                     <span className="grid size-4 place-items-center rounded-full bg-primary text-primary-foreground">
                       <Check size={9} strokeWidth={3} />
                     </span>
-                    <span className="text-[8px] text-slate-500">
+                    <span className="text-[8px] text-muted-foreground">
                       Human-approved, always
                     </span>
-                    <ChevronRight size={10} className="ml-auto text-slate-600" />
+                    <ChevronRight size={10} className="ml-auto text-muted-foreground" />
                   </div>
                 </motion.div>
               </div>
@@ -261,10 +261,10 @@ export function LandingPage() {
 
             <div className="flex items-center gap-2 border-t border-white/[0.07] bg-black/10 px-4 py-3">
               <Sparkles size={12} className="text-primary" />
-              <span className="text-[9px] text-slate-500">
+              <span className="text-[9px] text-muted-foreground">
                 Thoughtful replies, ready when you are.
               </span>
-              <span className="ml-auto flex items-center gap-1 text-[8px] text-slate-600">
+              <span className="ml-auto flex items-center gap-1 text-[8px] text-muted-foreground">
                 <span className="size-1 rounded-full bg-primary" />
                 Gemini powered
               </span>
@@ -281,10 +281,10 @@ export function LandingPage() {
               <ShieldCheck size={16} />
             </span>
             <span>
-              <span className="block text-[10px] font-semibold text-slate-100">
+              <span className="block text-[10px] font-semibold text-foreground">
                 You approve every reply
               </span>
-              <span className="mt-1 block text-[9px] text-slate-500">
+              <span className="mt-1 block text-[9px] text-muted-foreground">
                 No auto-posting. No surprises.
               </span>
             </span>
@@ -358,7 +358,7 @@ export function LandingPage() {
                 <p className="text-sm font-semibold text-white">
                   Designed for trust, not autopilot
                 </p>
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                   ReviewAgent helps you respond. You stay in control.
                 </p>
               </div>
@@ -374,13 +374,13 @@ export function LandingPage() {
       </section>
 
       <footer className="relative z-10 border-t border-white/[0.06]">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-6 text-[10px] text-slate-600 sm:flex-row sm:px-10">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-6 text-[10px] text-muted-foreground sm:flex-row sm:px-10">
           <span>© Review Pulse</span>
           <span className="flex items-center gap-1.5">
             <Star size={10} className="text-primary" />
             Thoughtful replies. Stronger relationships.
           </span>
-          <Link className="inline-flex items-center gap-1 hover:text-slate-400" href="/triage">
+          <Link className="inline-flex items-center gap-1 hover:text-muted-foreground" href="/triage">
             Open demo <ChevronRight size={11} />
           </Link>
         </div>

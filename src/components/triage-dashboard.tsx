@@ -115,7 +115,7 @@ function RatingStars({ rating, size = 13 }: { rating: number; size?: number }) {
           key={index}
           size={size}
           strokeWidth={1.7}
-          className={index < rating ? "fill-amber-300 text-amber-300" : "text-slate-700"}
+          className={index < rating ? "fill-amber-300 text-amber-300" : "text-muted-foreground/40"}
         />
       ))}
     </span>
@@ -156,18 +156,18 @@ function ReviewCard({
         </Avatar>
         <span className="min-w-0 flex-1">
           <span className="flex items-center justify-between gap-2">
-            <span className="truncate text-[13px] font-semibold text-slate-100">
+            <span className="truncate text-[13px] font-semibold text-foreground">
               {review.authorName}
             </span>
-            <span className="shrink-0 text-[10px] text-slate-600">
+            <span className="shrink-0 text-[10px] text-muted-foreground">
               <RelativeTime value={review.reviewDate} />
             </span>
           </span>
           <span className="mt-1.5 flex items-center justify-between gap-2">
             <RatingStars rating={review.rating} size={10} />
-            <span className="text-[9px] text-slate-600">Google</span>
+            <span className="text-[9px] text-muted-foreground">Google</span>
           </span>
-          <span className="mt-2 block line-clamp-2 text-[11px] leading-[1.65] text-slate-500">
+          <span className="mt-2 block line-clamp-2 text-[11px] leading-[1.65] text-muted-foreground">
             {review.reviewText}
           </span>
           <span className="mt-2.5 flex items-center justify-between">
@@ -179,7 +179,7 @@ function ReviewCard({
                   ? "text-destructive"
                   : review.status === "APPROVED"
                     ? "text-primary"
-                    : "text-slate-600",
+                    : "text-muted-foreground",
               )}
             >
               {review.status === "PENDING_REVIEW"
@@ -240,9 +240,9 @@ function DraftTurn({
       </span>
       <div className="min-w-0 flex-1">
         <div className="mb-2 flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold text-slate-200">ReviewAgent</span>
-          <span className="text-[10px] text-slate-600">·</span>
-          <span className="text-[10px] text-slate-500">
+          <span className="text-xs font-semibold text-foreground">ReviewAgent</span>
+          <span className="text-[10px] text-muted-foreground">·</span>
+          <span className="text-[10px] text-muted-foreground">
             {isLatest ? (isDemo ? "Demo draft" : "Suggested response") : "Previous draft"}
           </span>
         </div>
@@ -303,7 +303,7 @@ function DraftTurn({
                   <ThumbsDown size={12} />
                 )}
                 Reject
-                <kbd className="ml-1 rounded border border-white/10 px-1 py-0.5 text-[9px] text-slate-500">
+                <kbd className="ml-1 rounded border border-white/10 px-1 py-0.5 text-[9px] text-muted-foreground">
                   R
                 </kbd>
               </Button>
@@ -317,7 +317,7 @@ function DraftTurn({
               >
                 <WandSparkles size={12} />
                 Refactor
-                <kbd className="ml-1 rounded border border-white/10 px-1 py-0.5 text-[9px] text-slate-500">
+                <kbd className="ml-1 rounded border border-white/10 px-1 py-0.5 text-[9px] text-muted-foreground">
                   F
                 </kbd>
               </Button>
@@ -613,7 +613,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
             review<span className="text-primary">pulse</span>
           </span>
           <span className="mx-1 hidden h-5 w-px bg-white/10 sm:block" />
-          <span className="hidden text-xs text-slate-500 sm:block">Review inbox</span>
+          <span className="hidden text-xs text-muted-foreground sm:block">Review inbox</span>
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -628,7 +628,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
               </Button>
             </form>
           ) : (
-            <span className="grid size-8 place-items-center rounded-full border border-white/10 bg-white/[0.06] text-[10px] font-semibold text-slate-300">
+            <span className="grid size-8 place-items-center rounded-full border border-white/10 bg-white/[0.06] text-[10px] font-semibold text-foreground">
               RP
             </span>
           )}
@@ -650,11 +650,11 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                   <h1 className="text-[15px] font-semibold tracking-[-0.02em] text-white">
                     Review inbox
                   </h1>
-                  <span className="rounded-md border border-white/[0.08] bg-white/[0.04] px-1.5 py-0.5 text-[9px] font-medium text-slate-400">
+                  <span className="rounded-md border border-white/[0.08] bg-white/[0.04] px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
                     {pendingCount}
                   </span>
                 </div>
-                <p className="mt-1.5 text-[11px] text-slate-500">
+                <p className="mt-1.5 text-[11px] text-muted-foreground">
                   Keep every customer heard.
                 </p>
               </div>
@@ -706,11 +706,11 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
 
           <ScrollArea className="min-h-0 flex-1 px-2.5 pb-5">
             <div className="mb-2 flex items-center gap-2 px-2.5 pt-1.5">
-              <Inbox size={12} className="text-slate-600" />
-              <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-600">
+              <Inbox size={12} className="text-muted-foreground" />
+              <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Reviews
               </span>
-              <span className="ml-auto text-[9px] text-slate-600">
+              <span className="ml-auto text-[9px] text-muted-foreground">
                 {filteredReviews.length}
               </span>
             </div>
@@ -727,13 +727,13 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
 
             {filteredReviews.length === 0 ? (
               <div className="px-4 py-10 text-center">
-                <span className="mx-auto grid size-9 place-items-center rounded-xl border border-white/[0.07] bg-white/[0.025] text-slate-500">
+                <span className="mx-auto grid size-9 place-items-center rounded-xl border border-white/[0.07] bg-white/[0.025] text-muted-foreground">
                   <Inbox size={16} />
                 </span>
-                <p className="mt-3 text-xs font-medium text-slate-300">
+                <p className="mt-3 text-xs font-medium text-foreground">
                   {reviews.length ? "No matching reviews" : "You're all caught up"}
                 </p>
-                <p className="mt-1 text-[10px] leading-5 text-slate-600">
+                <p className="mt-1 text-[10px] leading-5 text-muted-foreground">
                   {reviews.length
                     ? "Try another search or sentiment filter."
                     : "New customer feedback will appear here."}
@@ -743,7 +743,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
           </ScrollArea>
 
           <div className="border-t border-white/[0.06] px-4 py-3">
-            <div className="flex items-center gap-2 text-[9px] text-slate-600">
+            <div className="flex items-center gap-2 text-[9px] text-muted-foreground">
               <Clock3 size={11} />
               <span>Last synced just now</span>
               <span className="ml-auto flex items-center gap-1.5">
@@ -768,14 +768,14 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                   <button
                     type="button"
                     onClick={() => setMobileThreadOpen(false)}
-                    className="grid size-8 place-items-center rounded-lg text-slate-500 hover:bg-white/[0.05] hover:text-white lg:hidden"
+                    className="grid size-8 place-items-center rounded-lg text-muted-foreground hover:bg-white/[0.05] hover:text-white lg:hidden"
                     aria-label="Back to inbox"
                   >
                     <ArrowLeft size={16} />
                   </button>
                   <div>
-                    <p className="text-xs font-semibold text-slate-200">Review thread</p>
-                    <p className="mt-0.5 text-[9px] text-slate-600">
+                    <p className="text-xs font-semibold text-foreground">Review thread</p>
+                    <p className="mt-0.5 text-[9px] text-muted-foreground">
                       Google Business Profile <span className="mx-1">·</span> Review #
                       {selectedReview.id.slice(0, 6)}
                     </p>
@@ -831,13 +831,13 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                       </p>
                       <div className="mt-1.5 flex flex-wrap items-center gap-2">
                         <RatingStars rating={selectedReview.rating} size={12} />
-                        <span className="text-[10px] text-slate-600">·</span>
-                        <span className="text-[10px] text-slate-500">
+                        <span className="text-[10px] text-muted-foreground">·</span>
+                        <span className="text-[10px] text-muted-foreground">
                           <RelativeTime value={selectedReview.reviewDate} />
                         </span>
                       </div>
                     </div>
-                    <span className="ml-auto hidden rounded-full border border-white/[0.07] px-2.5 py-1 text-[9px] text-slate-500 sm:inline-flex">
+                    <span className="ml-auto hidden rounded-full border border-white/[0.07] px-2.5 py-1 text-[9px] text-muted-foreground sm:inline-flex">
                       Customer review
                     </span>
                   </div>
@@ -869,7 +869,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
 
                   <div className="my-7 flex items-center gap-3">
                     <Separator className="flex-1" />
-                    <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-600">
+                    <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
                       Response draft
                     </span>
                     <Separator className="flex-1" />
@@ -937,7 +937,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                         <span className="grid size-8 shrink-0 place-items-center rounded-xl border border-primary/15 bg-primary/10 text-primary">
                           <Sparkles size={14} className="animate-pulse" />
                         </span>
-                        <span className="flex items-center gap-2 self-center text-xs text-slate-500">
+                        <span className="flex items-center gap-2 self-center text-xs text-muted-foreground">
                           <span className="flex gap-1">
                             <span className="size-1 animate-bounce rounded-full bg-primary/70 [animation-delay:-0.2s]" />
                             <span className="size-1 animate-bounce rounded-full bg-primary/70 [animation-delay:-0.1s]" />
@@ -953,10 +953,10 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                         <span className="mx-auto grid size-9 place-items-center rounded-xl border border-primary/10 bg-primary/5 text-primary">
                           <WandSparkles size={16} />
                         </span>
-                        <p className="mt-3 text-xs font-semibold text-slate-200">
+                        <p className="mt-3 text-xs font-semibold text-foreground">
                           Ready for a thoughtful first draft
                         </p>
-                        <p className="mx-auto mt-1.5 max-w-sm text-[10px] leading-5 text-slate-500">
+                        <p className="mx-auto mt-1.5 max-w-sm text-[10px] leading-5 text-muted-foreground">
                           Generate a response draft from this customer&apos;s review.
                         </p>
                         <Button
@@ -978,13 +978,13 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
           ) : (
             <div className="grid flex-1 place-items-center p-8">
               <div className="max-w-sm text-center">
-                <span className="mx-auto grid size-12 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.025] text-slate-500">
+                <span className="mx-auto grid size-12 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.025] text-muted-foreground">
                   <Inbox size={21} />
                 </span>
-                <h2 className="mt-4 text-sm font-semibold text-slate-200">
+                <h2 className="mt-4 text-sm font-semibold text-foreground">
                   {reviews.length ? "Select a review" : "Your inbox is clear"}
                 </h2>
-                <p className="mt-2 text-xs leading-6 text-slate-500">
+                <p className="mt-2 text-xs leading-6 text-muted-foreground">
                   {reviews.length
                     ? "Choose a review from the inbox to see its conversation."
                     : "When a new review arrives, it will be ready for you here."}

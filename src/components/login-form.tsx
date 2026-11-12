@@ -44,7 +44,7 @@ export function LoginForm({ hasCallbackError }: { hasCallbackError: boolean }) {
       <CardContent className="p-7 sm:p-9">
       <Link
         href="/"
-        className="mb-9 inline-flex items-center gap-2 text-xs text-slate-500 transition hover:text-slate-200"
+        className="mb-9 inline-flex items-center gap-2 text-xs text-muted-foreground transition hover:text-foreground"
       >
         <ArrowLeft size={14} />
         Back to home
@@ -67,9 +67,9 @@ export function LoginForm({ hasCallbackError }: { hasCallbackError: boolean }) {
           <h1 className="mt-6 text-2xl font-semibold tracking-[-0.04em] text-white">
             Check your inbox
           </h1>
-          <p className="mt-3 text-sm leading-6 text-slate-400">
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">
             We sent a secure sign-in link to{" "}
-            <span className="font-medium text-slate-200">{email}</span>. It will
+            <span className="font-medium text-foreground">{email}</span>. It will
             take you straight to your review workspace.
           </p>
         </div>
@@ -82,12 +82,12 @@ export function LoginForm({ hasCallbackError }: { hasCallbackError: boolean }) {
           <h1 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-white">
             Welcome back
           </h1>
-          <p className="mt-2 text-sm leading-6 text-slate-500">
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
             Sign in with a one-time email link. No password to remember.
           </p>
 
           <form onSubmit={handleSubmit} className="mt-7 space-y-4">
-            <label className="block text-xs font-medium text-slate-300" htmlFor="email">
+            <label className="block text-xs font-medium text-foreground" htmlFor="email">
               Work email
             </label>
             <Input
@@ -115,7 +115,7 @@ export function LoginForm({ hasCallbackError }: { hasCallbackError: boolean }) {
             </Button>
           </form>
 
-          <p className="mt-6 text-center text-[11px] leading-5 text-slate-600">
+          <p className="mt-6 text-center text-[11px] leading-5 text-muted-foreground">
             By continuing, you agree to keep every customer reply thoughtful
             and respectful.
           </p>
