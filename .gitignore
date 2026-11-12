@@ -1,13 +1,32 @@
-# Python-generated files
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
+# Dependencies
+/node_modules
+/.pnp
+.pnp.*
 
-# Virtual environments
-.venv
+# Next.js
+/.next/
+/out/
 
-# .env
+# Production
+/build
+
+# Local environment files
 .env
+.env.*
+!.env.example
+
+# Deployment
+/.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Local playground environment
+/playground/.venv/
+/playground/.env
