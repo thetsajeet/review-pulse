@@ -140,59 +140,30 @@ function ReviewCard({
       onClick={onSelect}
       aria-pressed={selected}
       className={cn(
-        "group w-full rounded-[15px] border p-3.5 text-left transition",
+        "w-full rounded-xl border bg-card px-4 py-3.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         selected
-          ? "border-primary/20 bg-primary/5"
-          : "border-transparent hover:border-border hover:bg-accent/50",
+          ? "border-primary bg-primary/5"
+          : "border-border hover:border-primary/50 hover:bg-accent/50",
       )}
     >
-      <Card className="gap-0 rounded-[15px] border-0 bg-transparent p-0 shadow-none">
-      <CardContent className="p-0">
-      <div className="flex items-start gap-3">
-        <Avatar className="size-9 shrink-0">
-          <AvatarFallback className="text-[10px]">
-            {initials(review.authorName)}
-          </AvatarFallback>
-        </Avatar>
-        <span className="min-w-0 flex-1">
-          <span className="flex items-center justify-between gap-2">
-            <span className="truncate text-[13px] font-semibold text-foreground">
-              {review.authorName}
-            </span>
-            <span className="shrink-0 text-[10px] text-muted-foreground">
-              <RelativeTime value={review.reviewDate} />
-            </span>
-          </span>
-          <span className="mt-1.5 flex items-center justify-between gap-2">
-            <RatingStars rating={review.rating} size={10} />
-            <span className="text-[9px] text-muted-foreground">Google</span>
-          </span>
-          <span className="mt-2 block line-clamp-2 text-[11px] leading-[1.65] text-muted-foreground">
-            {review.reviewText}
-          </span>
-          <span className="mt-2.5 flex items-center justify-between">
-            <SentimentBadge sentiment={sentimentFromRating(review.rating)} />
-            <span
-              className={cn(
-                "text-[9px]",
-                review.status === "REJECTED"
-                  ? "text-destructive"
-                  : review.status === "APPROVED"
-                    ? "text-accent-foreground"
-                    : "text-muted-foreground",
-              )}
-            >
-              {review.status === "PENDING_REVIEW"
-                ? "New review"
-                : review.status === "APPROVED"
-                  ? "Approved"
-                  : "Rejected"}
-            </span>
-          </span>
+      <span className="flex items-start justify-between gap-3">
+        <span className="min-w-0 break-words text-[13px] font-semibold leading-5 text-foreground">
+          {review.authorName}
         </span>
-      </div>
-      </CardContent>
-      </Card>
+        <span className="shrink-0 pt-0.5 text-[10px] text-muted-foreground">
+          <RelativeTime value={review.reviewDate} />
+        </span>
+      </span>
+      <span className="mt-3 flex flex-wrap items-center gap-2">
+        <RatingStars rating={review.rating} size={12} />
+        <SentimentBadge sentiment={sentimentFromRating(review.rating)} />
+        {review.status !== "PENDING_REVIEW" ? (
+          <Badge variant="secondary">
+            {review.status === "APPROVED" ? <Check /> : <X />}
+            {review.status === "APPROVED" ? "Approved" : "Rejected"}
+          </Badge>
+        ) : null}
+      </span>
     </motion.button>
   );
 }
@@ -714,16 +685,18 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                 {filteredReviews.length}
               </span>
             </div>
-            <AnimatePresence initial={false}>
-              {filteredReviews.map((review) => (
-                <ReviewCard
-                  key={review.id}
-                  review={review}
-                  selected={selectedReview?.id === review.id}
-                  onSelect={() => selectReview(review)}
-                />
-              ))}
-            </AnimatePresence>
+            <div className="space-y-2">
+              <AnimatePresence initial={false}>
+                {filteredReviews.map((review) => (
+                  <ReviewCard
+                    key={review.id}
+                    review={review}
+                    selected={selectedReview?.id === review.id}
+                    onSelect={() => selectReview(review)}
+                  />
+                ))}
+              </AnimatePresence>
+            </div>
 
             {filteredReviews.length === 0 ? (
               <div className="px-4 py-10 text-center">

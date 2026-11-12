@@ -33,7 +33,7 @@ The migration enables RLS on all three public tables and scopes access through t
 
 ## MVP behavior
 
-- The triage page loads pending and rejected reviews visible to the signed-in user and shows sample reviews when Supabase is not configured.
+- The triage page loads pending, approved, and rejected reviews visible to the signed-in user and shows sample reviews when Supabase is not configured.
 - In the demo workspace, **Add review** inserts a dummy review and automatically generates its first draft. Without a Gemini key, the demo uses canned response templates.
 - **Refactor** opens an instruction field under the draft actions and sends the entered guidance plus the full ordered thread of owner comments and prior drafts through LangGraph. Gemini calls require `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) when Supabase is configured.
 - Review sentiment is derived from its rating: 1–2 Negative, 3 Neutral, and 4–5 Positive.
