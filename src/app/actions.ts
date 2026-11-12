@@ -17,6 +17,18 @@ const threadMessageSchema = z.object({
   role: z.enum(["user", "assistant"]),
   content: z.string().min(1).max(2000),
 });
+const threadMessagesSchema = z.array(threadMessageSchema).superRefine((messages, ctx) => {
+  const totalCharacters = messages.reduce(
+    (total, message) => total + message.content.length,
+    0,
+  );
+  if (totalCharacters > 100_000) {
+    ctx.addIssue({
+      code: "custom",
+      message: "Thread history is too long to process.",
+    });
+  }
+});
 const reviewSchema = z
   .object({
     id: reviewIdSchema,
@@ -33,7 +45,7 @@ const reviewSchema = z
 const refineInputSchema = z.object({
   reviewId: reviewIdSchema,
   feedback: z.string().trim().max(1200).default(""),
-  messages: z.array(threadMessageSchema).max(20).default([]),
+  messages: threadMessagesSchema.default([]),
   demoReview: reviewSchema.optional(),
 });
 
@@ -152,7 +164,7 @@ export async function refineReviewDraft(
 ): Promise<{ draft: string; sentiment: Review["sentiment"] }> {
   const parsed = refineInputSchema.safeParse(input);
   if (!parsed.success) {
-    throw new Error("Review feedback is invalid or too long.");
+    throw new Error("Review feedback is invalid or the conversation is too long.");
   }
 
   const { reviewId, feedback, messages, demoReview: suppliedDemoReview } =
