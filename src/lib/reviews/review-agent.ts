@@ -92,6 +92,9 @@ export async function generateReviewDraft({
           ].join("\n"),
         ),
         ...state.messages.map(toLangChainMessage),
+        new HumanMessage(
+          "Generate or revise the response draft using the full review and conversation above.",
+        ),
       ]);
 
       return {
