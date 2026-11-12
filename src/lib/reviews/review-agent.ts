@@ -66,8 +66,7 @@ export async function generateReviewDraft({
   const sentiment = sentimentFromRating(review.rating);
   const model = new ChatGoogleGenerativeAI({
     apiKey,
-    model: "gemini-2.5-flash",
-    temperature: 0.35,
+    model: "gemini-3.5-flash-lite",
   }).withStructuredOutput(responseSchema, { name: "review_response" });
 
   const graph = new StateGraph(ReviewAgentState)
