@@ -140,14 +140,16 @@ function ReviewRow({
       onClick={onSelect}
       aria-pressed={selected}
       className={cn(
-        "w-full border-b border-l-2 border-b-border px-4 py-3.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
-        selected
-          ? "border-l-sidebar-primary bg-sidebar-accent/50"
-          : "border-l-transparent hover:bg-accent/50",
+        "w-full border-b border-b-border px-4 py-3.5 text-left transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
       )}
     >
       <span className="flex items-start justify-between gap-3">
-        <span className="min-w-0 break-words text-[13px] font-semibold leading-5 text-foreground">
+        <span
+          className={cn(
+            "min-w-0 break-words text-[13px] font-semibold leading-5",
+            selected ? "text-sidebar-primary" : "text-foreground",
+          )}
+        >
           {review.authorName}
         </span>
         <span className="shrink-0 pt-0.5 text-[10px] text-muted-foreground">
@@ -219,7 +221,7 @@ function DraftTurn({
         </div>
         <Card
           className={cn(
-            "rounded-2xl rounded-tl-md p-0 text-[13px] leading-[1.8]",
+            "rounded-none p-0 text-[13px] leading-[1.8]",
             isLatest
               ? "border-primary/10 bg-card"
               : "border-border bg-muted/50 text-muted-foreground",
@@ -820,7 +822,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                   >
-                    <Card className="border-border bg-card">
+                    <Card className="rounded-none border-border bg-card">
                       <CardContent className="p-5 sm:p-6">
                         <div className="mb-3 flex items-center justify-between">
                           <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
@@ -888,7 +890,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                             transition={{ duration: 0.16, ease: "easeOut" }}
                             className="ml-8 flex justify-end"
                           >
-                            <div className="max-w-[85%] rounded-2xl rounded-tr-md border border-primary/10 bg-primary/5 px-4 py-3 text-[12px] leading-[1.75] text-foreground">
+                            <div className="max-w-[85%] rounded-none border border-primary/10 bg-primary/5 px-4 py-3 text-[12px] leading-[1.75] text-foreground">
                               <div className="mb-1.5 flex items-center justify-end gap-1.5 text-[9px] font-medium text-muted-foreground">
                                 Your guidance <CheckCheck size={11} />
                               </div>
@@ -922,7 +924,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                     ) : null}
 
                     {visibleMessages.length === 0 && working !== "refine" ? (
-                      <div className="rounded-2xl border border-dashed border-border bg-muted/50 px-5 py-6 text-center">
+                      <div className="rounded-none border border-dashed border-border bg-muted/50 px-5 py-6 text-center">
                         <span className="mx-auto grid size-9 place-items-center rounded-xl border border-primary/10 bg-primary/5 text-accent-foreground">
                           <WandSparkles size={16} />
                         </span>
