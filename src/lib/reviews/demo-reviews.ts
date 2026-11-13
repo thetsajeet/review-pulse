@@ -8,62 +8,62 @@ export function createDemoReviews(): Review[] {
   return [
   {
     id: "c56671f0-81ca-43bd-90d4-0a6dafb40c53",
-    authorName: "Olivia Chen",
-    rating: 5,
+    authorName: "Marcus T.",
+    rating: 2,
     reviewText:
-      "The team made our anniversary dinner feel special from the moment we walked in. The mushroom risotto was incredible, and Maya was so thoughtful with the wine pairing. We will absolutely be back.",
+      "Waited 40 minutes for a table even with a booking. Food was good, but nobody kept us updated. The host was friendly when we finally got seated, but it took the shine off the evening.",
     reviewDate: hoursAgo(2),
-    sentiment: sentimentFromRating(5),
+    sentiment: sentimentFromRating(2),
     draftResponse:
-      "Olivia, thank you for celebrating your anniversary with us. We are so glad you enjoyed the risotto and Maya's wine pairing. It means a lot that you chose to spend such a special evening here, and we look forward to welcoming you back.",
+      "Hi Marcus, thank you for telling us about your evening, and I'm sorry about the wait. A booking should mean a prompt table, and we should have kept you updated. I'm glad the food and our host made up some of the difference. We're reviewing how we handle delays at the door. Please reach us so we can make it right.",
     status: "PENDING_REVIEW",
   },
   {
     id: "ea9f19c6-b91e-4e8e-9b98-90a82b0f62e7",
-    authorName: "Marcus Williams",
-    rating: 2,
+    authorName: "Priya S.",
+    rating: 5,
     reviewText:
-      "We waited nearly 40 minutes after ordering, and two dishes arrived cold. The staff were polite, but the whole experience was frustrating for a weeknight dinner.",
+      "The saffron latte is unreal. Staff remembered my name.",
     reviewDate: hoursAgo(5),
-    sentiment: sentimentFromRating(2),
+    sentiment: sentimentFromRating(5),
     draftResponse:
-      "Marcus, thank you for letting us know. We are sorry your dinner was delayed and that the food did not arrive as it should. This is not the experience we want for our guests, and we would appreciate the chance to learn more and make things right.",
+      "Thank you for the lovely review, Priya! We're so glad you enjoyed the saffron latte and felt remembered by the team. We hope to see you again soon.",
     status: "PENDING_REVIEW",
   },
   {
     id: "a1c8162e-6da4-4d7e-91de-98e9c47eac4e",
-    authorName: "Priya Patel",
-    rating: 4,
+    authorName: "Dan K.",
+    rating: 1,
     reviewText:
-      "Lovely atmosphere and a great brunch menu. The coffee was excellent. It got a little noisy around noon, but we had a really nice time overall.",
+      "Found a hair in my soup. Manager shrugged.",
     reviewDate: hoursAgo(9),
-    sentiment: sentimentFromRating(4),
+    sentiment: sentimentFromRating(1),
     draftResponse:
-      "Priya, thank you for joining us for brunch. We are happy you enjoyed the coffee and atmosphere, and we appreciate the note about the noise at midday. We hope to see you again soon.",
+      "Hi Dan, we're very sorry about your experience. This falls short of our standards, and we appreciate you bringing it to our attention. We'd like to understand what happened and follow up with you directly.",
     status: "PENDING_REVIEW",
   },
   {
     id: "d617918a-df80-4852-8063-25f9b9ba0eed",
-    authorName: "James Rivera",
-    rating: 3,
+    authorName: "Aisha R.",
+    rating: 4,
     reviewText:
-      "The food was fine and the portions were generous. Nothing really stood out, but it was a convenient place for lunch.",
+      "Lovely brunch spot. Parking is a pain but worth it.",
     reviewDate: hoursAgo(23),
-    sentiment: sentimentFromRating(3),
+    sentiment: sentimentFromRating(4),
     draftResponse:
-      "James, thanks for stopping by for lunch and sharing your feedback. We are glad the portions worked well for you, and we would love another opportunity to make your next visit stand out.",
+      "Thanks for spending part of your day with us, Aisha. We're glad you enjoyed brunch and appreciate the note about parking. We hope to welcome you back soon.",
     status: "PENDING_REVIEW",
   },
   {
     id: "8a59c422-f5b3-4981-99aa-d0d37029239d",
-    authorName: "Sofia Martin",
-    rating: 1,
+    authorName: "Leo M.",
+    rating: 3,
     reviewText:
-      "The reservation was not ready when we arrived, and we were seated by the kitchen door despite asking for a quieter table. We left before ordering.",
+      "Decent menu, a bit pricey for the portion size.",
     reviewDate: hoursAgo(31),
-    sentiment: sentimentFromRating(1),
+    sentiment: sentimentFromRating(3),
     draftResponse:
-      "Sofia, we are sorry we did not have your table ready and that we could not accommodate your seating request. We understand why you left disappointed. Please contact us so we can learn more and try to make this right.",
+      "Thank you for sharing your thoughts, Leo. We're glad you enjoyed the menu and appreciate the honest feedback about portion sizes and pricing. We'll pass it along to our team.",
     status: "PENDING_REVIEW",
   },
   ];

@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, Mail, MessageSquareText } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Mail } from "lucide-react";
 import { sendSignInLink } from "@/app/actions";
+import { BrandMark } from "@/components/brand-mark";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -51,11 +52,9 @@ export function LoginForm({ hasCallbackError }: { hasCallbackError: boolean }) {
       </Link>
 
       <Link href="/" className="mb-8 flex items-center gap-2.5">
-        <span className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground">
-          <MessageSquareText size={17} />
-        </span>
+        <BrandMark className="size-9" />
         <span className="text-sm font-semibold tracking-[-0.03em] text-foreground">
-          review<span className="text-accent-foreground">pulse</span>
+          Review Pulse
         </span>
       </Link>
 

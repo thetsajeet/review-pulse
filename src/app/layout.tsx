@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     template: "%s · Review Pulse",
   },
   description:
-    "Turn customer reviews into thoughtful, brand-aligned responses with an AI review assistant.",
+    "Every Google Business review answered with a thoughtful draft you approve before it is sent.",
 };
 
 export default function RootLayout({

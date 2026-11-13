@@ -1,388 +1,157 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
-import {
-  ArrowRight,
-  Check,
-  ChevronRight,
-  MessageSquareText,
-  ShieldCheck,
-  Sparkles,
-  Star,
-  WandSparkles,
-} from "lucide-react";
-import { BackgroundBeams } from "@/components/ui/background-beams";
-import { Badge } from "@/components/ui/badge";
+import { ArrowRight, Star } from "lucide-react";
+import { BrandMark } from "@/components/brand-mark";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 
-const reviewPreview = [
+const steps = [
   {
-    initials: "OC",
-    name: "Olivia Chen",
-    note: "The team made our anniversary dinner feel special...",
-    sentiment: "Positive",
-    color: "text-emerald-700",
-    stars: 5,
+    number: "01 · TRIAGE",
+    title: "Sorted by what matters",
+    description:
+      "Urgent complaints rise to the top. Easy praise is flagged as safe.",
   },
   {
-    initials: "MW",
-    name: "Marcus Williams",
-    note: "We waited nearly 40 minutes after ordering...",
-    sentiment: "Needs care",
-    color: "text-rose-700",
-    stars: 2,
+    number: "02 · DRAFT",
+    title: "Replies in your voice",
+    description:
+      "Specific, warm, and free of promises you did not approve.",
   },
   {
-    initials: "PP",
-    name: "Priya Patel",
-    note: "Lovely atmosphere and a great brunch menu...",
-    sentiment: "Positive",
-    color: "text-emerald-700",
-    stars: 4,
+    number: "03 · DECIDE",
+    title: "You stay in control",
+    description:
+      "Approve, reject, or leave a comment and the agent rewrites it.",
   },
 ];
 
 export function LandingPage() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-background">
-      <BackgroundBeams
-        className="pointer-events-none opacity-20 [mask-image:linear-gradient(to_bottom,white,transparent_78%)]"
-      />
-
-      <header className="relative z-10 mx-auto flex h-[82px] max-w-7xl items-center justify-between px-6 sm:px-10">
-        <Link href="/" className="flex items-center gap-3" aria-label="Review Pulse home">
-          <span className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground">
-            <MessageSquareText size={18} strokeWidth={2.2} />
-          </span>
-          <span className="text-[15px] font-semibold tracking-[-0.03em] text-foreground">
-            review<span className="text-accent-foreground">pulse</span>
+    <main className="min-h-screen bg-background text-foreground">
+      <header className="mx-auto flex h-[92px] max-w-6xl items-center justify-between px-6 sm:px-10">
+        <Link href="/" className="flex items-center gap-2.5" aria-label="Review Pulse home">
+          <BrandMark className="size-8" />
+          <span className="text-[15px] font-semibold tracking-[-0.03em]">
+            Review Pulse
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 text-[13px] text-muted-foreground sm:flex">
+        <nav className="hidden items-center gap-8 text-sm text-muted-foreground sm:flex">
           <a className="transition hover:text-foreground" href="#how-it-works">
             How it works
           </a>
-          <a className="transition hover:text-foreground" href="#built-for-trust">
-            Built for trust
+          <a className="transition hover:text-foreground" href="#trust">
+            Why Review Pulse
           </a>
         </nav>
 
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/triage">
-            Open workspace
-            <ArrowRight size={14} />
-          </Link>
+        <Button variant="outline" asChild className="h-10 rounded-full px-5">
+          <Link href="/triage">Open workspace</Link>
         </Button>
       </header>
 
-      <section className="relative z-10 mx-auto grid max-w-7xl items-center gap-14 px-6 pb-24 pt-16 sm:px-10 sm:pt-24 lg:grid-cols-[1.02fr_0.98fr] lg:gap-10 lg:pb-32 lg:pt-24">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-[620px]"
-        >
-          <Badge variant="outline" className="mb-7 h-auto gap-2 border-primary/20 bg-primary/5 px-3 py-1.5 text-[11px] font-medium tracking-wide text-accent-foreground">
-            <span className="relative flex size-1.5">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
-              <span className="relative inline-flex size-1.5 rounded-full bg-primary" />
-            </span>
-            YOUR REVIEWS, WITH A HUMAN TOUCH
-          </Badge>
-
-          <h1 className="max-w-[650px] text-[clamp(2.8rem,6.2vw,5.25rem)] font-semibold leading-[0.99] tracking-[-0.075em] text-foreground">
-            Every review deserves a{" "}
-            <span className="bg-gradient-to-r from-accent-foreground to-foreground bg-clip-text text-transparent">
-              thoughtful reply.
-            </span>
-          </h1>
-
-          <p className="mt-7 max-w-[500px] text-base leading-7 text-muted-foreground sm:text-[17px] sm:leading-8">
-            Turn customer reviews into automated, brand-aligned responses
-            instantly. ReviewAgent helps you respond faster without sounding
-            like a robot.
-          </p>
-
-          <div className="mt-9 flex flex-wrap items-center gap-4">
-            <motion.div whileHover={{ y: -2, scale: 1.015 }} whileTap={{ scale: 0.985 }}>
-              <Button asChild size="lg" className="h-12 px-5 text-sm">
-                <Link href="/triage">
-                  Get Started <ArrowRight size={16} />
-                </Link>
-              </Button>
-            </motion.div>
-            <span className="flex items-center gap-2 text-xs text-muted-foreground">
-              <ShieldCheck size={15} className="text-muted-foreground" />
-              You stay in control of every reply
-            </span>
-          </div>
-
-          <div className="mt-11 flex items-center gap-4 border-t border-border pt-6">
-            <div className="flex -space-x-2">
-              {["bg-violet-300", "bg-sky-300", "bg-amber-200", "bg-rose-300"].map(
-                (color, index) => (
-                  <span
-                    key={color}
-                    className={`grid size-7 place-items-center rounded-full border-2 border-background ${color} text-[9px] font-bold text-slate-900`}
-                    aria-hidden
-                  >
-                    {["M", "A", "J", "S"][index]}
-                  </span>
-                ),
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              <span className="font-medium text-foreground">Made for people</span>
-              {" "}who care about their customers
-            </p>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 28, rotateX: 5 }}
-          animate={{ opacity: 1, y: 0, rotateX: 0 }}
-          transition={{ duration: 0.8, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-          className="relative mx-auto w-full max-w-[570px] [perspective:1200px]"
-          aria-label="Preview of the Review Pulse review inbox"
-        >
-          <Card className="relative overflow-hidden rounded-[22px] border-border bg-card p-0 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-border px-5 py-4">
-              <div className="flex items-center gap-3">
-                <span className="grid size-8 place-items-center rounded-lg border border-border bg-muted text-accent-foreground">
-                  <MessageSquareText size={15} />
-                </span>
-                <div>
-                  <p className="text-xs font-semibold text-foreground">Review inbox</p>
-                  <p className="mt-0.5 text-[10px] text-muted-foreground">The Juniper Table</p>
-                </div>
-              </div>
-              <Badge variant="outline" className="h-auto border-primary/20 bg-primary/5 px-2.5 py-1 text-[9px] font-medium text-accent-foreground">
-                12 to review
-              </Badge>
-            </div>
-
-            <div className="grid min-h-[348px] grid-cols-[0.92fr_1.08fr] gap-0">
-              <div className="border-r border-border p-3">
-                <div className="mb-2 flex items-center justify-between px-1.5">
-                  <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                    Recent
-                  </span>
-                  <span className="text-[9px] text-muted-foreground">View all</span>
-                </div>
-                <div className="space-y-1">
-                  {reviewPreview.map((review, index) => (
-                    <motion.div
-                      key={review.name}
-                      initial={{ opacity: 0, x: -8 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.35 + index * 0.1 }}
-                      className={`rounded-xl p-2.5 ${index === 0 ? "border border-primary/20 bg-primary/5" : "border border-transparent"}`}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="truncate text-[10px] font-medium text-foreground">
-                          {review.name}
-                        </span>
-                        <span className="flex shrink-0 gap-0.5 text-amber-800">
-                          {Array.from({ length: 5 }).map((_, star) => (
-                            <Star
-                              key={star}
-                              size={7}
-                              fill={star < review.stars ? "currentColor" : "transparent"}
-                              className={star < review.stars ? "" : "text-muted-foreground/40"}
-                            />
-                          ))}
-                        </span>
-                      </div>
-                      <p className="mt-1 truncate text-[9px] leading-4 text-muted-foreground">
-                        {review.note}
-                      </p>
-                      <span className={`mt-1.5 block text-[8px] ${review.color}`}>
-                        {review.sentiment}
-                      </span>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex flex-col p-4">
-                <div className="flex items-center gap-2">
-                  <span className="grid size-6 place-items-center rounded-full bg-secondary text-[8px] font-bold text-secondary-foreground">
-                    OC
-                  </span>
-                  <div>
-                    <p className="text-[10px] font-medium text-foreground">Olivia Chen</p>
-                    <div className="mt-0.5 flex gap-0.5 text-amber-800">
-                      {Array.from({ length: 5 }).map((_, index) => (
-                        <Star key={index} size={8} fill="currentColor" />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <p className="mt-3 text-[10px] leading-[1.8] text-muted-foreground">
-                  The team made our anniversary dinner feel special from the
-                  moment we walked in. We will absolutely be back.
-                </p>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.75 }}
-                  className="mt-auto rounded-xl border border-primary/10 bg-primary/5 p-3"
-                >
-                  <div className="mb-2 flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 text-[9px] font-semibold text-foreground">
-                      <WandSparkles size={11} className="text-accent-foreground" />
-                      ReviewAgent draft
-                    </span>
-                    <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[8px] text-accent-foreground">
-                      On brand
-                    </span>
-                  </div>
-                  <p className="text-[9px] leading-[1.8] text-muted-foreground">
-                    Olivia, thank you for celebrating with us. We are so glad
-                    you enjoyed your evening, and we look forward to welcoming
-                    you back.
-                  </p>
-                  <div className="mt-3 flex items-center gap-1.5 border-t border-border pt-2.5">
-                    <span className="grid size-4 place-items-center rounded-full bg-primary text-primary-foreground">
-                      <Check size={9} strokeWidth={3} />
-                    </span>
-                    <span className="text-[8px] text-muted-foreground">
-                      Human-approved, always
-                    </span>
-                    <ChevronRight size={10} className="ml-auto text-muted-foreground" />
-                  </div>
-                </motion.div>
-              </div>
-              </div>
-
-            <div className="flex items-center gap-2 border-t border-border bg-muted/50 px-4 py-3">
-              <Sparkles size={12} className="text-accent-foreground" />
-              <span className="text-[9px] text-muted-foreground">
-                Thoughtful replies, ready when you are.
-              </span>
-              <span className="ml-auto flex items-center gap-1 text-[8px] text-muted-foreground">
-                <span className="size-1 rounded-full bg-primary" />
-                Gemini powered
-              </span>
-            </div>
-          </Card>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.35 }}
-            className="absolute -bottom-5 -left-6 hidden items-center gap-2.5 rounded-xl border border-border bg-card px-3.5 py-3 shadow-xl sm:flex"
+      <section className="mx-auto flex max-w-4xl flex-col items-center px-6 pb-20 pt-14 text-center sm:px-10 sm:pt-16">
+        <span className="rounded-full bg-primary/20 px-3 py-1 text-sm font-medium text-accent-foreground">
+          Google Business reviews
+        </span>
+        <h1 className="mt-7 max-w-3xl text-[clamp(2.6rem,6.2vw,4.4rem)] font-semibold leading-[1.04] tracking-[-0.075em]">
+          Every review answered.
+          <br />
+          Nothing sent without you.
+        </h1>
+        <p className="mt-5 max-w-[570px] text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
+          An agent reads each new review, drafts a reply in your voice, and
+          waits. You approve, reject, or refine it with a comment.
+        </p>
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <Button asChild size="lg" className="h-[52px] rounded-full px-7">
+            <Link href="/triage">
+              Open workspace <ArrowRight size={16} />
+            </Link>
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            asChild
+            className="h-[52px] rounded-full px-7"
           >
-            <span className="grid size-8 place-items-center rounded-lg bg-primary/10 text-accent-foreground">
-              <ShieldCheck size={16} />
-            </span>
-            <span>
-              <span className="block text-[10px] font-semibold text-foreground">
-                You approve every reply
+            <a href="#how-it-works">See how it works</a>
+          </Button>
+        </div>
+
+        <Card className="mt-16 w-full max-w-[696px] rounded-[22px] border-border bg-card p-0 text-left shadow-none">
+          <div className="px-7 pb-5 pt-7 sm:px-8">
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-sm font-semibold">Marcus T.</span>
+              <span
+                className="flex shrink-0 gap-0.5 text-amber-600"
+                aria-label="2 out of 5 stars"
+              >
+                {Array.from({ length: 5 }, (_, index) => (
+                  <Star
+                    key={index}
+                    size={14}
+                    strokeWidth={1.8}
+                    fill={index < 2 ? "currentColor" : "transparent"}
+                  />
+                ))}
               </span>
-              <span className="mt-1 block text-[9px] text-muted-foreground">
-                No auto-posting. No surprises.
-              </span>
+            </div>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              Waited 40 minutes for a table even with a booking. Food was good,
+              but nobody kept us updated.
+            </p>
+            <div className="my-5 border-t border-border" />
+            <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-accent-foreground">
+              Agent draft
             </span>
-          </motion.div>
-        </motion.div>
+            <p className="mt-2 text-sm leading-6">
+              Hi Marcus, thank you for telling us, and I&apos;m sorry about the
+              wait. We should have kept you updated. We&apos;d love to welcome
+              you back.
+            </p>
+            <div className="mt-5 flex justify-end gap-2">
+              <span className="inline-flex h-10 items-center rounded-full border border-border px-5 text-sm font-medium">
+                Refactor
+              </span>
+              <span className="inline-flex h-10 items-center rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground">
+                Approve
+              </span>
+            </div>
+          </div>
+        </Card>
       </section>
 
       <section
         id="how-it-works"
-        className="relative z-10 border-t border-border bg-background/80"
+        className="mx-auto grid max-w-6xl gap-8 px-6 pb-24 pt-4 sm:grid-cols-3 sm:px-10 sm:pt-12"
       >
-        <div className="mx-auto max-w-7xl px-6 py-20 sm:px-10 lg:py-24">
-          <div className="mx-auto max-w-xl text-center">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-accent-foreground">
-              A better way to respond
-            </span>
-            <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-foreground sm:text-4xl">
-              From review to reply,
-              <br className="hidden sm:block" /> without the busywork.
+        {steps.map((step) => (
+          <article key={step.number}>
+            <p className="text-[10px] font-semibold tracking-[0.13em] text-muted-foreground">
+              {step.number}
+            </p>
+            <h2 className="mt-2 text-lg font-semibold tracking-[-0.03em]">
+              {step.title}
             </h2>
-          </div>
-
-          <div className="mt-12 grid gap-4 md:grid-cols-3">
-            {[
-              {
-                icon: MessageSquareText,
-                title: "Everything in one inbox",
-                text: "See new feedback, ratings, and sentiment in a single calm workspace.",
-              },
-              {
-                icon: WandSparkles,
-                title: "A draft that sounds like you",
-                text: "Get a thoughtful first response, then refine it with plain-language guidance.",
-              },
-              {
-                icon: ShieldCheck,
-                title: "You make the final call",
-                text: "Approve, edit, or dismiss. Your voice stays yours, and every reply stays yours.",
-              },
-            ].map(({ icon: Icon, title, text }, index) => (
-              <motion.article
-                key={title}
-                initial={{ opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ delay: index * 0.08 }}
-                className="rounded-2xl"
-              >
-                <Card className="h-full border-border bg-card">
-                  <CardContent className="p-6">
-                    <span className="grid size-10 place-items-center rounded-xl border border-primary/10 bg-primary/5 text-accent-foreground">
-                      <Icon size={18} />
-                    </span>
-                    <h3 className="mt-5 text-sm font-semibold text-card-foreground">{title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p>
-                  </CardContent>
-                </Card>
-              </motion.article>
-            ))}
-          </div>
-
-          <div
-            id="built-for-trust"
-            className="mt-14 flex flex-col items-center justify-between gap-5 rounded-2xl border border-border bg-gradient-to-r from-primary/5 via-card to-primary/5 p-6 sm:flex-row sm:px-8"
-          >
-            <div className="flex items-center gap-4">
-              <span className="grid size-11 place-items-center rounded-full border border-primary/10 bg-primary/5 text-accent-foreground">
-                <ShieldCheck size={19} />
-              </span>
-              <div>
-                <p className="text-sm font-semibold text-foreground">
-                  Designed for trust, not autopilot
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  ReviewAgent helps you respond. You stay in control.
-                </p>
-              </div>
-            </div>
-            <Button variant="link" asChild className="group h-auto p-0 text-xs font-semibold text-accent-foreground">
-              <Link href="/triage">
-                Explore the workspace
-                <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </Button>
-          </div>
-        </div>
+            <p className="mt-1.5 text-sm leading-6 text-muted-foreground">
+              {step.description}
+            </p>
+          </article>
+        ))}
       </section>
 
-      <footer className="relative z-10 border-t border-border">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-6 text-[10px] text-muted-foreground sm:flex-row sm:px-10">
-          <span>© Review Pulse</span>
-          <span className="flex items-center gap-1.5">
-            <Star size={10} className="text-accent-foreground" />
-            Thoughtful replies. Stronger relationships.
+      <footer
+        id="trust"
+        className="border-t border-border px-6 py-7 text-sm text-muted-foreground sm:px-10"
+      >
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 sm:flex-row">
+          <span>Review Pulse</span>
+          <span className="flex items-center gap-1">
+            Every reply stays in your hands.
           </span>
-          <Link className="inline-flex items-center gap-1 hover:text-muted-foreground" href="/triage">
-            Open demo <ChevronRight size={11} />
-          </Link>
         </div>
       </footer>
     </main>

@@ -12,6 +12,8 @@ cp .env.example .env.local
 npm run dev
 ```
 
+Keep the development server running and open `http://localhost:3000`. Source edits hot-reload in the browser, so you do not need to run `npm run build` to preview each change. Use `npm run build` when you want to verify the production build; `npm start` serves that build.
+
 With Supabase variables left blank, the app runs with sample reviews and simulated actions. Add a Gemini key to `.env.local` to use Gemini for draft generation in demo mode.
 
 ## Configure Supabase

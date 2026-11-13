@@ -29,7 +29,7 @@
   --chart-3: oklch(0.6323 0.1623 252.0967);
   --chart-4: oklch(0.6170 0.1909 24.6833);
   --chart-5: oklch(0.6759 0.1634 150.2272);
-  --radius: 1.4rem;
+  --radius: 1rem;
   --sidebar: oklch(0.9850 0 0);
   --sidebar-foreground: oklch(0.2178 0 0);
   --sidebar-primary: oklch(0.8223 0.1648 86.7192);
@@ -104,7 +104,7 @@
   --radius-4xl: calc(var(--radius) * 2.6);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --radius: 1.4rem;
+  --radius: 1rem;
   --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
   --tracking-tight: calc(var(--tracking-normal) - 0.025em);
   --tracking-wide: calc(var(--tracking-normal) + 0.025em);
@@ -167,7 +167,7 @@
   --chart-3: oklch(0.6693 0.1427 250.8035);
   --chart-4: oklch(0.6762 0.3056 327.4089);
   --chart-5: oklch(0.6759 0.1634 150.2272);
-  --radius: 1.4rem;
+  --radius: 1rem;
   --sidebar: oklch(0.2050 0 0);
   --sidebar-foreground: oklch(0.9401 0 0);
   --sidebar-primary: oklch(0.8223 0.1648 86.7192);

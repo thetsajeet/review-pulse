@@ -4,18 +4,16 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft,
   Check,
-  CheckCheck,
   Clock3,
   Inbox,
-  MessageSquareText,
   Plus,
   Search,
-  Sparkles,
+  ShieldCheck,
   Star,
-  ThumbsDown,
   WandSparkles,
   X,
 } from "lucide-react";
+import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -29,16 +27,12 @@ import {
   simulateDemoReview,
   updateReviewStatus,
 } from "@/app/actions";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { BrandMark } from "@/components/brand-mark";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import type { Review, ReviewStatus, Sentiment, ThreadMessage } from "@/lib/reviews/types";
 import { sentimentFromRating } from "@/lib/reviews/sentiment";
-import type { Review, Sentiment, ThreadMessage } from "@/lib/reviews/types";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -46,11 +40,16 @@ type Props = {
   mode: "demo" | "supabase";
 };
 
-type SentimentFilter = "All" | Sentiment;
 type Notice = { tone: "success" | "error"; message: string };
 type Action = "approve" | "reject" | "refine";
 
-const filters: SentimentFilter[] = ["All", "Positive", "Neutral", "Negative"];
+const reviewTabs: { label: string; status: ReviewStatus }[] = [
+  { label: "Needs review", status: "PENDING_REVIEW" },
+  { label: "Approved", status: "APPROVED" },
+  { label: "Rejected", status: "REJECTED" },
+];
+
+const feedbackSuggestions = ["Warmer", "Shorter", "More formal", "Remove the offer"];
 
 function relativeTime(value: string) {
   const date = new Date(value);
@@ -78,44 +77,49 @@ function RelativeTime({ value }: { value: string }) {
   return <time dateTime={value}>{label}</time>;
 }
 
-function initials(name: string) {
-  return name
-    .split(/\s+/)
-    .map((part) => part[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+function reviewTopic(review: Review) {
+  const text = review.reviewText.toLowerCase();
+  if (/wait|delay|booking|reservation|seated|service/.test(text)) return "Wait time";
+  if (/hair|clean|hygiene|sanitary/.test(text)) return "Hygiene";
+  if (/park/.test(text)) return "Parking";
+  if (/price|cost|portion|expensive/.test(text)) return "Pricing";
+  if (/food|meal|dish|soup|cold|pasta|latte/.test(text)) return "Food";
+  return "Experience";
 }
 
-function SentimentBadge({ sentiment }: { sentiment: Sentiment }) {
+function priorityFromRating(rating: number) {
+  if (rating <= 2) return "Urgent";
+  if (rating === 3) return "Review";
+  return "Auto-safe";
+}
+
+function SentimentPill({ sentiment }: { sentiment: Sentiment }) {
   return (
-    <Badge
-      variant="outline"
+    <span
       className={cn(
-        sentiment === "Positive" &&
-          "border-emerald-300/20 bg-emerald-300/10 text-emerald-700",
-        sentiment === "Neutral" &&
-          "border-amber-300/20 bg-amber-300/10 text-amber-800",
-        sentiment === "Negative" &&
-          "border-destructive/20 bg-destructive/10 text-destructive",
+        "inline-flex items-center rounded-full px-2.5 py-1 text-xs",
+        sentiment === "Positive" && "bg-emerald-50 text-emerald-800",
+        sentiment === "Neutral" && "bg-amber-100/70 text-amber-900",
+        sentiment === "Negative" && "bg-rose-50 text-rose-800",
       )}
     >
-      <span className="size-1 rounded-full bg-current" />
       {sentiment}
-    </Badge>
+    </span>
   );
 }
 
-function RatingStars({ rating, size = 13 }: { rating: number; size?: number }) {
+function RatingStars({ rating, size = 14 }: { rating: number; size?: number }) {
   return (
-    <span className="inline-flex items-center gap-0.5" aria-label={`${rating} out of 5 stars`}>
+    <span
+      className="inline-flex items-center gap-0.5 text-amber-600"
+      aria-label={`${rating} out of 5 stars`}
+    >
       {Array.from({ length: 5 }, (_, index) => (
         <Star
           key={index}
           size={size}
           strokeWidth={1.7}
-          className={index < rating ? "fill-amber-600 text-amber-600" : "text-muted-foreground/40"}
+          fill={index < rating ? "currentColor" : "transparent"}
         />
       ))}
     </span>
@@ -131,6 +135,8 @@ function ReviewRow({
   selected: boolean;
   onSelect: () => void;
 }) {
+  const priority = priorityFromRating(review.rating);
+
   return (
     <motion.button
       initial={{ opacity: 0 }}
@@ -140,31 +146,31 @@ function ReviewRow({
       onClick={onSelect}
       aria-pressed={selected}
       className={cn(
-        "w-full border-b border-b-border px-4 py-3.5 text-left transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
+        "mb-1.5 w-full rounded-2xl border px-3.5 py-3 text-left transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        selected ? "border-primary bg-white" : "border-transparent",
       )}
     >
-      <span className="flex items-start justify-between gap-3">
+      <span className="flex items-center justify-between gap-2">
+        <span className="truncate text-sm font-semibold">{review.authorName}</span>
+        <RatingStars rating={review.rating} size={13} />
+      </span>
+      <span className="mt-1.5 block line-clamp-2 text-sm leading-5 text-muted-foreground">
+        {review.reviewText}
+      </span>
+      <span className="mt-2.5 flex flex-wrap items-center gap-1.5">
         <span
           className={cn(
-            "min-w-0 break-words text-[13px] font-semibold leading-5",
-            selected ? "text-sidebar-primary" : "text-foreground",
+            "rounded-full px-2.5 py-1 text-xs",
+            priority === "Urgent" && "bg-primary/25 text-amber-900",
+            priority === "Review" && "bg-muted text-foreground",
+            priority === "Auto-safe" && "bg-muted text-foreground",
           )}
         >
-          {review.authorName}
+          {priority}
         </span>
-        <span className="shrink-0 pt-0.5 text-[10px] text-muted-foreground">
-          <RelativeTime value={review.reviewDate} />
+        <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-foreground">
+          {reviewTopic(review)}
         </span>
-      </span>
-      <span className="mt-3 flex flex-wrap items-center gap-2">
-        <RatingStars rating={review.rating} size={12} />
-        <SentimentBadge sentiment={sentimentFromRating(review.rating)} />
-        {review.status !== "PENDING_REVIEW" ? (
-          <Badge variant="secondary">
-            {review.status === "APPROVED" ? <Check /> : <X />}
-            {review.status === "APPROVED" ? "Approved" : "Rejected"}
-          </Badge>
-        ) : null}
       </span>
     </motion.button>
   );
@@ -172,6 +178,7 @@ function ReviewRow({
 
 function DraftTurn({
   content,
+  version,
   isLatest,
   isApproved,
   isPending,
@@ -184,9 +191,9 @@ function DraftTurn({
   onSubmitRefactor,
   onCancelRefactor,
   working,
-  isDemo,
 }: {
   content: string;
+  version: number;
   isLatest: boolean;
   isApproved: boolean;
   isPending: boolean;
@@ -199,146 +206,143 @@ function DraftTurn({
   onSubmitRefactor: (event: FormEvent<HTMLFormElement>) => void;
   onCancelRefactor: () => void;
   working: Action | null;
-  isDemo: boolean;
 }) {
   return (
-    <motion.article
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.16, ease: "easeOut" }}
-      className="flex gap-3"
-    >
-      <span className="grid size-8 shrink-0 place-items-center rounded-xl border border-primary/15 bg-primary/10 text-accent-foreground">
-        <WandSparkles size={15} />
+    <section className="relative pl-8">
+      <span
+        className={cn(
+          "absolute left-[-6px] top-1.5 size-4 rounded-full border-2 bg-background",
+          isLatest ? "border-primary" : "border-border",
+          isApproved && "border-emerald-600 bg-emerald-600",
+        )}
+      >
+        {isApproved ? <Check className="size-3 text-white" strokeWidth={3} /> : null}
       </span>
-      <div className="min-w-0 flex-1">
-        <div className="mb-2 flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold text-foreground">ReviewAgent</span>
-          <span className="text-[10px] text-muted-foreground">·</span>
-          <span className="text-[10px] text-muted-foreground">
-            {isLatest ? (isDemo ? "Demo draft" : "Suggested response") : "Previous draft"}
-          </span>
+      <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+        Agent draft response · V{version}
+      </p>
+      <div
+        className={cn(
+          "rounded-[22px] border bg-white p-5 sm:p-6",
+          isLatest ? "border-primary ring-2 ring-primary/15" : "border-border",
+        )}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h3 className="text-base font-semibold">
+            {isLatest ? "Thoughtful reply" : "Previous draft"}
+          </h3>
+          {version > 1 ? (
+            <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-foreground">
+              Refactored
+            </span>
+          ) : null}
+          {isApproved ? (
+            <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs text-emerald-800">
+              Approved
+            </span>
+          ) : null}
         </div>
-        <Card
-          className={cn(
-            "rounded-none p-0 text-[13px] leading-[1.8]",
-            isLatest
-              ? "border-primary/10 bg-card"
-              : "border-border bg-muted/50 text-muted-foreground",
-          )}
-        >
-          <CardContent className="p-4">{content}</CardContent>
-        </Card>
+        <p className="mt-3 whitespace-pre-wrap text-sm leading-6">{content}</p>
+
         {isLatest && isApproved ? (
-          <div className="mt-3 flex items-start gap-2.5 rounded-xl border border-emerald-300/15 bg-emerald-300/[0.06] px-3.5 py-3">
-            <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-emerald-300 text-[#07120d]">
-              <Check size={12} strokeWidth={3} />
-            </span>
-            <span>
-              <span className="block text-xs font-semibold text-emerald-700">
-                Sent to Google Business Profile
-              </span>
-              <span className="mt-1 block text-[10px] leading-4 text-emerald-700">
-                MVP delivery is simulated. Connect Google Business Profile to publish live.
-              </span>
-            </span>
-          </div>
+          <p className="mt-4 rounded-xl bg-emerald-50 px-3.5 py-3 text-xs leading-5 text-emerald-900">
+            Response approved. Publishing is not connected yet.
+          </p>
         ) : null}
+
         {isLatest && isPending ? (
           <>
-            <div className="mt-3 flex flex-wrap items-center gap-2">
+            <div className="mt-5 flex flex-wrap gap-2">
               <Button
-                size="sm"
-                onClick={onApprove}
-                disabled={working !== null}
-                className="h-8 rounded-lg px-3 text-[11px]"
-              >
-                {working === "approve" ? (
-                  <span className="size-3 animate-spin rounded-full border border-slate-900/30 border-t-slate-900" />
-                ) : (
-                  <Check size={13} strokeWidth={2.5} />
-                )}
-                Approve
-                <kbd className="ml-1 rounded border border-slate-900/15 px-1 py-0.5 text-[9px] font-medium text-slate-800/70">
-                  A
-                </kbd>
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={onReject}
-                disabled={working !== null}
-                className="h-8 rounded-lg px-3 text-[11px]"
-              >
-                {working === "reject" ? (
-                  <span className="size-3 animate-spin rounded-full border border-secondary-foreground/30 border-t-secondary-foreground" />
-                ) : (
-                  <ThumbsDown size={12} />
-                )}
-                Reject
-                <kbd className="ml-1 rounded border border-border px-1 py-0.5 text-[9px] text-muted-foreground">
-                  R
-                </kbd>
-              </Button>
-              <Button
-                variant="ghost"
+                type="button"
+                variant="outline"
                 size="sm"
                 onClick={onOpenRefactor}
                 disabled={working !== null}
                 aria-expanded={refactorOpen}
-                className="h-8 rounded-lg px-3 text-[11px]"
+                className="rounded-full px-3"
               >
-                <WandSparkles size={12} />
+                <WandSparkles size={14} />
                 Refactor
-                <kbd className="ml-1 rounded border border-border px-1 py-0.5 text-[9px] text-muted-foreground">
-                  F
-                </kbd>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={onReject}
+                disabled={working !== null}
+                className="rounded-full px-3"
+              >
+                {working === "reject" ? "Rejecting…" : "Reject"}
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                onClick={onApprove}
+                disabled={working !== null}
+                className="ml-auto rounded-full px-4"
+              >
+                {working === "approve" ? "Approving…" : "Approve"}
+                <Check size={14} />
               </Button>
             </div>
             {refactorOpen ? (
-              <form
-                onSubmit={onSubmitRefactor}
-                className="mt-3 rounded-xl border border-border bg-background/70 p-3"
-              >
+              <form onSubmit={onSubmitRefactor} className="mt-4 border-t border-border pt-4">
+                <label
+                  htmlFor="draft-feedback"
+                  className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+                >
+                  Refactor with comments
+                </label>
                 <Textarea
+                  id="draft-feedback"
                   autoFocus
                   value={feedback}
                   onChange={(event) => onFeedbackChange(event.target.value)}
                   maxLength={1200}
-                  placeholder="What should change in this response?"
+                  placeholder="e.g. Mention that we added a waitlist text alert"
                   aria-label="Refactor instructions"
-                  className="min-h-20 border-0 bg-transparent text-xs shadow-none focus-visible:ring-0"
+                  className="mt-2 min-h-[60px] resize-y rounded-2xl border-border bg-transparent text-sm shadow-none focus-visible:ring-1"
                   disabled={working !== null}
                 />
-                <div className="mt-2 flex items-center justify-between gap-2">
-                  <span className="text-[10px] text-muted-foreground">
-                    Your instructions guide the next draft.
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <Button
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {feedbackSuggestions.map((suggestion) => (
+                    <button
+                      key={suggestion}
                       type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={onCancelRefactor}
-                      disabled={working !== null}
+                      onClick={() => onFeedbackChange(suggestion)}
+                      className="rounded-full border border-border bg-muted/60 px-2.5 py-1 text-xs hover:bg-muted"
                     >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      size="sm"
-                      disabled={!feedback.trim() || working !== null}
-                    >
-                      {working === "refine" ? "Generating…" : "Regenerate"}
-                    </Button>
-                  </div>
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-4 flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={onCancelRefactor}
+                    disabled={working !== null}
+                    className="rounded-full"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    disabled={!feedback.trim() || working !== null}
+                    className="rounded-full"
+                  >
+                    {working === "refine" ? "Generating…" : "Regenerate"}
+                  </Button>
                 </div>
               </form>
             ) : null}
           </>
         ) : null}
       </div>
-    </motion.article>
+    </section>
   );
 }
 
@@ -346,7 +350,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
   const [reviews, setReviews] = useState(initialReviews);
   const [selectedId, setSelectedId] = useState(initialReviews[0]?.id ?? "");
   const [threads, setThreads] = useState<Record<string, ThreadMessage[]>>({});
-  const [filter, setFilter] = useState<SentimentFilter>("All");
+  const [filter, setFilter] = useState<ReviewStatus>("PENDING_REVIEW");
   const [query, setQuery] = useState("");
   const [feedback, setFeedback] = useState("");
   const [refactorOpenId, setRefactorOpenId] = useState<string | null>(null);
@@ -357,14 +361,14 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
 
   const filteredReviews = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    return reviews.filter((review) => {
-      const matchesFilter =
-        filter === "All" || sentimentFromRating(review.rating) === filter;
-      const matchesQuery =
-        !normalizedQuery ||
-        `${review.authorName} ${review.reviewText}`.toLowerCase().includes(normalizedQuery);
-      return matchesFilter && matchesQuery;
-    });
+    return reviews.filter(
+      (review) =>
+        review.status === filter &&
+        (!normalizedQuery ||
+          `${review.authorName} ${review.reviewText}`
+            .toLowerCase()
+            .includes(normalizedQuery)),
+    );
   }, [filter, query, reviews]);
 
   const selectedReview =
@@ -382,6 +386,12 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
     (latest, message, index) => (message.role === "assistant" ? index : latest),
     -1,
   );
+  const pendingCount = reviews.filter(
+    (review) => review.status === "PENDING_REVIEW",
+  ).length;
+  const approvedCount = reviews.filter(
+    (review) => review.status === "APPROVED",
+  ).length;
 
   const handleStatus = useCallback(
     async (status: "APPROVED" | "REJECTED") => {
@@ -393,25 +403,19 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
 
       try {
         await updateReviewStatus(review.id, status);
-        if (status === "REJECTED") {
-          setReviews((current) =>
-            current.map((item) =>
-              item.id === review.id ? { ...item, status: "REJECTED" } : item,
-            ),
-          );
-          setRefactorOpenId(null);
-          setNotice({ tone: "success", message: "Review marked as rejected." });
-        } else {
-          setReviews((current) =>
-            current.map((item) =>
-              item.id === review.id ? { ...item, status: "APPROVED" } : item,
-            ),
-          );
-          setNotice({
-            tone: "success",
-            message: "Response approved. MVP delivery is simulated.",
-          });
-        }
+        setReviews((current) =>
+          current.map((item) =>
+            item.id === review.id ? { ...item, status } : item,
+          ),
+        );
+        setRefactorOpenId(null);
+        setNotice({
+          tone: "success",
+          message:
+            status === "REJECTED"
+              ? "Review marked as rejected."
+              : "Response approved. Publishing is not connected yet.",
+        });
       } catch (error) {
         setNotice({
           tone: "error",
@@ -434,7 +438,7 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
       const review = await simulateDemoReview();
       setReviews((current) => [review, ...current]);
       setSelectedId(review.id);
-      setFilter("All");
+      setFilter("PENDING_REVIEW");
       setQuery("");
       setFeedback("");
       setRefactorOpenId(null);
@@ -573,156 +577,147 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
     setNotice(null);
   }
 
-  const pendingCount = reviews.filter((review) => review.status === "PENDING_REVIEW").length;
+  const sentiment = selectedReview
+    ? sentimentFromRating(selectedReview.rating)
+    : null;
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-30 flex h-[66px] items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur-xl sm:px-6">
-        <div className="flex items-center gap-3">
-          <span className="grid size-8 place-items-center rounded-[10px] bg-primary text-primary-foreground">
-            <MessageSquareText size={15} strokeWidth={2.2} />
+      <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background px-4 sm:px-7">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <Link
+            href="/"
+            className="grid size-8 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground"
+            aria-label="Review Pulse home"
+          >
+            <BrandMark className="size-8 rounded-none bg-transparent" />
+          </Link>
+          <span className="text-sm font-semibold tracking-[-0.03em]">Review Pulse</span>
+          <span className="hidden text-sm text-muted-foreground sm:inline">/</span>
+          <span className="hidden truncate text-sm text-muted-foreground sm:inline">
+            {mode === "demo" ? "Saffron & Salt Cafe" : "Business workspace"}
           </span>
-          <span className="text-[13px] font-semibold tracking-[-0.03em] text-foreground">
-            review<span className="text-accent-foreground">pulse</span>
-          </span>
-          <span className="mx-1 hidden h-5 w-px bg-muted/50 sm:block" />
-          <span className="hidden text-xs text-muted-foreground sm:block">Review inbox</span>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          <Badge variant={mode === "demo" ? "secondary" : "outline"} className="hidden sm:inline-flex">
-            <span className="size-1 rounded-full bg-current" />
-            {mode === "demo" ? "Demo workspace" : "Private workspace"}
-          </Badge>
+        <div className="flex shrink-0 items-center gap-3 text-xs sm:gap-6">
+          <span className="hidden sm:inline">
+            <strong>{pendingCount}</strong> need you
+          </span>
+          <span className="hidden sm:inline">
+            <strong>{approvedCount}</strong> approved
+          </span>
+          <span className="rounded-full border border-border bg-muted/60 px-3 py-1.5">
+            Synced just now
+          </span>
           {mode === "supabase" ? (
             <form action={signOut}>
-              <Button type="submit" variant="outline" size="sm">
+              <Button type="submit" variant="outline" size="sm" className="rounded-full">
                 Sign out
               </Button>
             </form>
-          ) : (
-            <span className="grid size-8 place-items-center rounded-full border border-border bg-muted/50 text-[10px] font-semibold text-foreground">
-              RP
-            </span>
-          )}
+          ) : null}
         </div>
       </header>
 
-      <div className="grid min-h-[calc(100dvh-66px)] lg:grid-cols-[350px_minmax(0,1fr)]">
+      <div className="grid min-h-[calc(100dvh-64px)] lg:grid-cols-[360px_minmax(0,1fr)] xl:grid-cols-[360px_minmax(0,1fr)_300px]">
         <aside
           className={cn(
-            "min-h-[calc(100dvh-66px)] flex-col border-r border-sidebar-border bg-sidebar",
+            "min-h-[calc(100dvh-64px)] flex-col border-r border-border bg-[#fafafa]",
             mobileThreadOpen ? "hidden" : "flex",
             "lg:flex",
           )}
         >
-          <div className="px-5 pb-3 pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-[15px] font-semibold tracking-[-0.02em] text-foreground">
-                    Review inbox
-                  </h1>
-                  <span className="rounded-md border border-border bg-muted/50 px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
-                    {pendingCount}
-                  </span>
-                </div>
-                <p className="mt-1.5 text-[11px] text-muted-foreground">
-                  Keep every customer heard.
-                </p>
-              </div>
-              {mode === "demo" ? (
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={() => void handleAddDemoReview()}
-                  disabled={addingReview || working !== null}
-                  className="h-8 rounded-lg px-2.5 text-[10px]"
-                >
-                  {addingReview ? (
-                    <span className="size-3 animate-spin rounded-full border border-slate-900/30 border-t-slate-900" />
-                  ) : (
-                    <Plus size={13} />
-                  )}
-                  Add review
-                </Button>
-              ) : null}
+          <div className="px-3.5 pb-3 pt-4">
+            <div className="flex gap-1">
+              {reviewTabs.map(({ label, status }) => {
+                const count = reviews.filter((review) => review.status === status).length;
+                const active = filter === status;
+                return (
+                  <button
+                    key={status}
+                    type="button"
+                    onClick={() => setFilter(status)}
+                    aria-pressed={active}
+                    className={cn(
+                      "flex min-w-0 items-center gap-1.5 rounded-full border px-2.5 py-2 text-xs transition-colors",
+                      active
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-transparent hover:bg-white",
+                    )}
+                  >
+                    <span className="truncate">{label}</span>
+                    <span>{count}</span>
+                  </button>
+                );
+              })}
             </div>
-
-            <label className="mt-5 flex h-9 items-center gap-2 rounded-lg border border-input bg-background px-2.5 text-muted-foreground focus-within:border-ring">
+            <div className="mt-3 flex h-9 items-center gap-2 rounded-full border border-input bg-white px-3 text-muted-foreground focus-within:border-ring">
               <Search size={14} />
               <Input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search reviews..."
-                className="h-full min-w-0 flex-1 border-0 bg-transparent text-[11px] shadow-none focus-visible:ring-0"
+                placeholder="Search reviews"
+                className="h-full min-w-0 flex-1 border-0 bg-transparent text-xs shadow-none focus-visible:ring-0"
                 aria-label="Search reviews"
               />
-            </label>
-
-            <div className="mt-4 flex items-center gap-1 overflow-x-auto pb-1">
-              {filters.map((item) => (
-                <Button
-                  variant={filter === item ? "secondary" : "ghost"}
-                  size="sm"
+              {mode === "demo" ? (
+                <button
                   type="button"
-                  key={item}
-                  onClick={() => setFilter(item)}
-                  aria-pressed={filter === item}
-                  className="whitespace-nowrap text-[10px]"
+                  aria-label="Add a sample review"
+                  onClick={() => void handleAddDemoReview()}
+                  disabled={addingReview || working !== null}
+                  className="grid size-6 shrink-0 place-items-center rounded-full hover:bg-muted disabled:opacity-50"
+                  title="Add a sample review"
                 >
-                  {item}
-                </Button>
-              ))}
+                  <Plus size={14} />
+                </button>
+              ) : null}
             </div>
           </div>
 
-          <ScrollArea className="min-h-0 flex-1 px-2.5 pb-5">
-            <div className="mb-2 flex items-center gap-2 px-2.5 pt-1.5">
-              <Inbox size={12} className="text-muted-foreground" />
-              <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Reviews
+          <div className="min-h-0 flex-1 overflow-y-auto px-3.5 pb-3">
+            <div className="mb-2 flex items-center justify-between px-1 pt-1">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                {reviewTabs.find((tab) => tab.status === filter)?.label}
               </span>
-              <span className="ml-auto text-[9px] text-muted-foreground">
+              <span className="text-xs text-muted-foreground">
                 {filteredReviews.length}
               </span>
             </div>
-            <div className="border-t border-border">
-              <AnimatePresence initial={false}>
-                {filteredReviews.map((review) => (
-                  <ReviewRow
-                    key={review.id}
-                    review={review}
-                    selected={selectedReview?.id === review.id}
-                    onSelect={() => selectReview(review)}
-                  />
-                ))}
-              </AnimatePresence>
-            </div>
+            <AnimatePresence initial={false}>
+              {filteredReviews.map((review) => (
+                <ReviewRow
+                  key={review.id}
+                  review={review}
+                  selected={selectedReview?.id === review.id}
+                  onSelect={() => selectReview(review)}
+                />
+              ))}
+            </AnimatePresence>
 
             {filteredReviews.length === 0 ? (
               <div className="px-4 py-10 text-center">
-                <span className="mx-auto grid size-9 place-items-center rounded-xl border border-border bg-muted/50 text-muted-foreground">
+                <span className="mx-auto grid size-9 place-items-center rounded-xl border border-border bg-white text-muted-foreground">
                   <Inbox size={16} />
                 </span>
-                <p className="mt-3 text-xs font-medium text-foreground">
+                <p className="mt-3 text-sm font-medium">
                   {reviews.length ? "No matching reviews" : "You're all caught up"}
                 </p>
-                <p className="mt-1 text-[10px] leading-5 text-muted-foreground">
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">
                   {reviews.length
-                    ? "Try another search or sentiment filter."
+                    ? "Try another search or choose a different tab."
                     : "New customer feedback will appear here."}
                 </p>
               </div>
             ) : null}
-          </ScrollArea>
+          </div>
 
           <div className="border-t border-border px-4 py-3">
-            <div className="flex items-center gap-2 text-[9px] text-muted-foreground">
-              <Clock3 size={11} />
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Clock3 size={13} />
               <span>Last synced just now</span>
               <span className="ml-auto flex items-center gap-1.5">
-                <span className="size-1.5 rounded-full bg-emerald-300/80" />
+                <span className="size-1.5 rounded-full bg-emerald-600" />
                 {mode === "demo" ? "Sample reviews" : "Connected"}
               </span>
             </div>
@@ -738,39 +733,27 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
         >
           {selectedReview ? (
             <>
-              <div className="flex h-[60px] shrink-0 items-center justify-between border-b border-border px-4 sm:px-7">
+              <div className="flex h-[54px] shrink-0 items-center justify-between border-b border-border px-4 sm:px-7">
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
                     onClick={() => setMobileThreadOpen(false)}
-                    className="grid size-8 place-items-center rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground lg:hidden"
+                    className="grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-muted lg:hidden"
                     aria-label="Back to inbox"
                   >
                     <ArrowLeft size={16} />
                   </button>
-                  <div>
-                    <p className="text-xs font-semibold text-foreground">Review thread</p>
-                    <p className="mt-0.5 text-[9px] text-muted-foreground">
-                      Google Business Profile <span className="mx-1">·</span> Review #
-                      {selectedReview.id.slice(0, 6)}
-                    </p>
-                  </div>
+                  <span className="text-xs font-medium text-muted-foreground">
+                    Customer review
+                  </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <SentimentBadge sentiment={sentimentFromRating(selectedReview.rating)} />
-                  {selectedReview.status !== "PENDING_REVIEW" ? (
-                    <Badge
-                      variant={selectedReview.status === "REJECTED" ? "destructive" : "secondary"}
-                    >
-                      {selectedReview.status === "REJECTED" ? "Rejected" : "Approved"}
-                    </Badge>
-                  ) : null}
-                </div>
+                {mode === "demo" ? (
+                  <span className="text-xs text-muted-foreground">Sample workspace</span>
+                ) : null}
               </div>
 
-              <ScrollArea className="min-h-0 flex-1">
-              <div className="px-4 py-6 sm:px-7 sm:py-8">
-                <div className="mx-auto max-w-[760px]">
+              <div className="min-h-0 flex-1 overflow-y-auto">
+                <div className="mx-auto max-w-[820px] px-4 py-6 sm:px-8 sm:py-8">
                   {notice ? (
                     <motion.div
                       initial={{ opacity: 0 }}
@@ -778,10 +761,10 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                       transition={{ duration: 0.16, ease: "easeOut" }}
                       role={notice.tone === "error" ? "alert" : "status"}
                       className={cn(
-                        "mb-5 flex items-start justify-between gap-3 rounded-xl border px-3.5 py-3 text-xs",
+                        "mb-5 flex items-start justify-between gap-3 rounded-xl border px-3.5 py-3 text-sm",
                         notice.tone === "error"
-                          ? "border-rose-300/15 bg-rose-300/[0.06] text-rose-700"
-                          : "border-emerald-300/15 bg-emerald-300/[0.055] text-emerald-700",
+                          ? "border-rose-200 bg-rose-50 text-rose-800"
+                          : "border-emerald-200 bg-emerald-50 text-emerald-900",
                       )}
                     >
                       <span className="leading-5">{notice.message}</span>
@@ -796,178 +779,209 @@ export function TriageDashboard({ initialReviews, mode }: Props) {
                     </motion.div>
                   ) : null}
 
-                  <div className="mb-7 flex items-center gap-3">
-                    <Avatar className="size-10">
-                      <AvatarFallback>{initials(selectedReview.authorName)}</AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-foreground">
-                        {selectedReview.authorName}
+                  <div className="relative space-y-6 before:absolute before:bottom-4 before:left-[7px] before:top-4 before:border-l before:border-border">
+                    <section className="relative pl-8">
+                      <span className="absolute left-0 top-1.5 size-4 rounded-full border-2 border-primary bg-primary" />
+                      <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                        Customer
                       </p>
-                      <div className="mt-1.5 flex flex-wrap items-center gap-2">
-                        <RatingStars rating={selectedReview.rating} size={12} />
-                        <span className="text-[10px] text-muted-foreground">·</span>
-                        <span className="text-[10px] text-muted-foreground">
-                          <RelativeTime value={selectedReview.reviewDate} />
-                        </span>
-                      </div>
-                    </div>
-                    <span className="ml-auto hidden rounded-full border border-border px-2.5 py-1 text-[9px] text-muted-foreground sm:inline-flex">
-                      Customer review
-                    </span>
-                  </div>
-
-                  <motion.article
-                    key={`review-${selectedReview.id}`}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                  >
-                    <Card className="rounded-none border-border bg-card">
-                      <CardContent className="p-5 sm:p-6">
-                        <div className="mb-3 flex items-center justify-between">
-                          <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                            Original review
-                          </span>
-                          <span className="flex items-center gap-1.5 text-[9px] text-muted-foreground">
-                            <span className="grid size-4 place-items-center rounded-full bg-muted text-[8px] font-bold text-foreground">
-                              G
-                            </span>
-                            Google
-                          </span>
+                      <div className="rounded-[22px] border border-border bg-white p-5 sm:p-6">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <h1 className="text-lg font-semibold tracking-[-0.03em]">
+                              {selectedReview.authorName}
+                            </h1>
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              <RelativeTime value={selectedReview.reviewDate} />
+                            </p>
+                          </div>
+                          <RatingStars rating={selectedReview.rating} size={17} />
                         </div>
-                        <p className="whitespace-pre-wrap text-[13px] leading-[1.85] text-card-foreground sm:text-sm">
+                        <p className="mt-3 whitespace-pre-wrap text-sm leading-6">
                           {selectedReview.reviewText}
                         </p>
-                      </CardContent>
-                    </Card>
-                  </motion.article>
+                      </div>
+                    </section>
 
-                  <div className="my-7 flex items-center gap-3">
-                    <Separator className="flex-1" />
-                    <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                      Response draft
-                    </span>
-                    <Separator className="flex-1" />
-                  </div>
-
-                  <div className="space-y-5">
-                    <AnimatePresence initial={false}>
-                      {visibleMessages.map((message, index) =>
-                        message.role === "assistant" ? (
-                          <DraftTurn
-                            key={`${selectedReview.id}-assistant-${index}`}
-                            content={message.content}
-                            isLatest={index === latestAssistantIndex}
-                            isApproved={
-                              index === latestAssistantIndex &&
-                              selectedReview.status === "APPROVED"
-                            }
-                            isPending={selectedReview.status === "PENDING_REVIEW"}
-                            refactorOpen={refactorOpenId === selectedReview.id}
-                            feedback={feedback}
-                            onApprove={() => void handleStatus("APPROVED")}
-                            onReject={() => void handleStatus("REJECTED")}
-                            onOpenRefactor={() => {
-                              setRefactorOpenId((current) =>
-                                current === selectedReview.id ? null : selectedReview.id,
-                              );
-                              setNotice(null);
-                            }}
-                            onFeedbackChange={setFeedback}
-                            onSubmitRefactor={submitRefactor}
-                            onCancelRefactor={() => {
-                              setRefactorOpenId(null);
-                              setFeedback("");
-                            }}
-                            working={working}
-                            isDemo={mode === "demo"}
-                          />
-                        ) : (
-                          <motion.div
-                            key={`${selectedReview.id}-user-${index}`}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.16, ease: "easeOut" }}
-                            className="ml-8 flex justify-end"
-                          >
-                            <div className="max-w-[85%] rounded-none border border-primary/10 bg-primary/5 px-4 py-3 text-[12px] leading-[1.75] text-foreground">
-                              <div className="mb-1.5 flex items-center justify-end gap-1.5 text-[9px] font-medium text-muted-foreground">
-                                Your guidance <CheckCheck size={11} />
-                              </div>
+                    {visibleMessages.map((message, index) => {
+                      if (message.role === "user") {
+                        return (
+                          <section key={`${selectedReview.id}-user-${index}`} className="relative pl-8">
+                            <span className="absolute left-0 top-1.5 size-4 rounded-full border-2 border-border bg-background" />
+                            <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                              Your feedback
+                            </p>
+                            <div className="rounded-[22px] bg-muted px-5 py-4 text-sm leading-6">
                               {message.content}
                             </div>
-                          </motion.div>
-                        ),
-                      )}
-                    </AnimatePresence>
+                          </section>
+                        );
+                      }
+
+                      const version = visibleMessages
+                        .slice(0, index + 1)
+                        .filter((item) => item.role === "assistant").length;
+                      return (
+                        <DraftTurn
+                          key={`${selectedReview.id}-assistant-${index}`}
+                          content={message.content}
+                          version={version}
+                          isLatest={index === latestAssistantIndex}
+                          isApproved={
+                            index === latestAssistantIndex &&
+                            selectedReview.status === "APPROVED"
+                          }
+                          isPending={selectedReview.status === "PENDING_REVIEW"}
+                          refactorOpen={refactorOpenId === selectedReview.id}
+                          feedback={feedback}
+                          onApprove={() => void handleStatus("APPROVED")}
+                          onReject={() => void handleStatus("REJECTED")}
+                          onOpenRefactor={() => {
+                            setRefactorOpenId((current) =>
+                              current === selectedReview.id ? null : selectedReview.id,
+                            );
+                            setNotice(null);
+                          }}
+                          onFeedbackChange={setFeedback}
+                          onSubmitRefactor={submitRefactor}
+                          onCancelRefactor={() => {
+                            setRefactorOpenId(null);
+                            setFeedback("");
+                          }}
+                          working={working}
+                        />
+                      );
+                    })}
 
                     {working === "refine" ? (
-                      <motion.div
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="flex gap-3"
+                      <div
+                        className="relative flex items-center gap-2 pl-8 text-sm text-muted-foreground"
                         role="status"
                         aria-live="polite"
                       >
-                        <span className="grid size-8 shrink-0 place-items-center rounded-xl border border-primary/15 bg-primary/10 text-accent-foreground">
-                          <Sparkles size={14} className="animate-pulse" />
-                        </span>
-                        <span className="flex items-center gap-2 self-center text-xs text-muted-foreground">
-                          <span className="flex gap-1">
-                            <span className="size-1 animate-bounce rounded-full bg-primary/70 [animation-delay:-0.2s]" />
-                            <span className="size-1 animate-bounce rounded-full bg-primary/70 [animation-delay:-0.1s]" />
-                            <span className="size-1 animate-bounce rounded-full bg-primary/70" />
-                          </span>
-                          ReviewAgent is refining the response
-                        </span>
-                      </motion.div>
+                        <WandSparkles size={15} className="animate-pulse text-accent-foreground" />
+                        ReviewAgent is refining the response…
+                      </div>
                     ) : null}
 
                     {visibleMessages.length === 0 && working !== "refine" ? (
-                      <div className="rounded-none border border-dashed border-border bg-muted/50 px-5 py-6 text-center">
-                        <span className="mx-auto grid size-9 place-items-center rounded-xl border border-primary/10 bg-primary/5 text-accent-foreground">
-                          <WandSparkles size={16} />
-                        </span>
-                        <p className="mt-3 text-xs font-semibold text-foreground">
-                          Ready for a thoughtful first draft
+                      <section className="relative pl-8">
+                        <span className="absolute left-0 top-1.5 size-4 rounded-full border-2 border-primary bg-background" />
+                        <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                          Agent draft response
                         </p>
-                        <p className="mx-auto mt-1.5 max-w-sm text-[10px] leading-5 text-muted-foreground">
-                          Generate a response draft from this customer&apos;s review.
-                        </p>
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => void handleRefine("")}
-                          className="mt-4"
-                        >
-                          <Sparkles size={13} />
-                          Generate a draft
-                        </Button>
-                      </div>
+                        <div className="rounded-[22px] border border-border bg-white p-5 sm:p-6">
+                          <p className="text-sm text-muted-foreground">
+                            Generate a response draft from this customer&apos;s review.
+                          </p>
+                          <Button
+                            size="sm"
+                            onClick={() => void handleRefine("")}
+                            className="mt-4 rounded-full"
+                          >
+                            <WandSparkles size={14} />
+                            Generate a draft
+                          </Button>
+                        </div>
+                      </section>
                     ) : null}
                   </div>
                 </div>
               </div>
-              </ScrollArea>
             </>
           ) : (
             <div className="grid flex-1 place-items-center p-8">
               <div className="max-w-sm text-center">
-                <span className="mx-auto grid size-12 place-items-center rounded-2xl border border-border bg-muted/50 text-muted-foreground">
+                <span className="mx-auto grid size-12 place-items-center rounded-2xl border border-border bg-muted text-muted-foreground">
                   <Inbox size={21} />
                 </span>
-                <h2 className="mt-4 text-sm font-semibold text-foreground">
-                  {reviews.length ? "Select a review" : "Your inbox is clear"}
+                <h2 className="mt-4 text-sm font-semibold">
+                  {reviews.length ? "No reviews in this tab" : "Your inbox is clear"}
                 </h2>
                 <p className="mt-2 text-xs leading-6 text-muted-foreground">
                   {reviews.length
-                    ? "Choose a review from the inbox to see its conversation."
+                    ? "Choose another tab to see more reviews."
                     : "When a new review arrives, it will be ready for you here."}
                 </p>
               </div>
             </div>
           )}
         </section>
+
+        <aside className="hidden border-l border-border bg-[#fafafa] px-5 py-7 xl:block">
+          {selectedReview && sentiment ? (
+            <>
+              <h2 className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                Agent triage
+              </h2>
+              <dl className="mt-4 space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-sm text-muted-foreground">Sentiment</dt>
+                  <dd>
+                    <SentimentPill sentiment={sentiment} />
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-sm text-muted-foreground">Topic</dt>
+                  <dd className="rounded-full border border-border bg-white px-2.5 py-1 text-xs">
+                    {reviewTopic(selectedReview)}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-sm text-muted-foreground">Priority</dt>
+                  <dd
+                    className={cn(
+                      "rounded-full px-2.5 py-1 text-xs",
+                      selectedReview.rating <= 2
+                        ? "bg-primary/25 text-amber-900"
+                        : "border border-border bg-white",
+                    )}
+                  >
+                    {priorityFromRating(selectedReview.rating)}
+                  </dd>
+                </div>
+              </dl>
+
+              <h2 className="mt-7 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                Why this draft
+              </h2>
+              <div className="mt-3 space-y-2">
+                {[
+                  `Responds to the ${reviewTopic(selectedReview).toLowerCase()} feedback.`,
+                  `${sentiment} tone based on the customer's rating.`,
+                  "You can refine it before approving.",
+                ].map((reason) => (
+                  <p
+                    key={reason}
+                    className="rounded-2xl border border-border bg-white px-3.5 py-3 text-sm leading-5"
+                  >
+                    {reason}
+                  </p>
+                ))}
+              </div>
+
+              <h2 className="mt-7 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                Guardrails
+              </h2>
+              <ul className="mt-3 space-y-2 text-sm">
+                {[
+                  "Human approval required",
+                  "No automatic publishing",
+                  "Review before sending",
+                ].map((guardrail) => (
+                  <li key={guardrail} className="flex items-center gap-2">
+                    <ShieldCheck size={14} className="shrink-0 text-amber-700" />
+                    {guardrail}
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Select a review to see its triage details.
+            </p>
+          )}
+        </aside>
       </div>
     </main>
   );
